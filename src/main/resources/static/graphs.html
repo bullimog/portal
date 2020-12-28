@@ -1,0 +1,75 @@
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+<div id="myDiv" style="width:1100px;height:250px;"></div>
+
+
+<script>
+
+var d = new Date();
+var ys = [];
+var xs = [];
+
+var trace1 = {
+  x: xs,
+  y: ys,
+  mode: 'lines',
+  name: 'iSpindel',
+  connectgaps: true,
+  line: {
+    color: 'rgb(0, 0, 150)',
+    width: 1
+  }
+};
+
+var data = [trace1];
+
+var layout = {
+  title:'iSpindel',
+  xaxis: {
+//    title: 'Date / Time'
+  },
+  yaxis: {
+    title: 'Temperatue &#176;C'
+  },
+  paper_bgcolor: '#f5f5f5',
+  plot_bgcolor: '#eeeeff',
+  margin:{
+    t: 25,
+    r: 10,
+    l: 55,
+    b: 30
+  }
+};
+
+Plotly.newPlot('myDiv', data, layout);
+
+
+function fjson(){
+  fetch("/brewery/temperatures")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    //clear old data
+    while(ys.length>0){ys.pop();}
+    while(xs.length>0){xs.pop();}
+
+    //add new data.
+    for(var n=0; n<myJson.temperature.length; n++){
+      ys.push(myJson.temperature[n]);
+      xs.push(myJson.dateTime[n]);
+    }
+
+    Plotly.newPlot('myDiv', data, layout);
+    setTimeout(fjson, 5000);
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+  });
+}
+
+setTimeout(fjson, 500);
+</script>
+</body>
