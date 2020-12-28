@@ -16,15 +16,12 @@ public class Temperatures {
         this.temperatures = temperatures;
     }
 
-    public ArrayList<LocalDateTime> getdateTime() {return dateTimes;}
-    public ArrayList<Float> getTemperature(){return temperatures;}
-
-//    public void setDateTimes(ArrayList<LocalDateTime> dateTime) {this.dateTimes = dateTimes;}
-//    public void setTemperatures(ArrayList<Float> temperature) {this.temperatures = temperatures;}
-
     public void appendTemperature(Float temperature){
         LocalDateTime date = LocalDateTime.now();
         dateTimes.add(date);
         temperatures.add(temperature);
     }
+
+    public ArrayList<LocalDateTime> getdateTime() {return dateTimes;}
+    public ArrayList<Float> getTemperature(){return temperatures;}
 }
