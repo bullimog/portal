@@ -2,9 +2,11 @@ package com.bullimog.portal.controllers;
 
 import com.bullimog.portal.connectors.TemperatureFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnectorImpl;
+import com.bullimog.portal.models.ISpindelData;
 import com.bullimog.portal.models.Temperatures;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -17,7 +19,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,11 +38,6 @@ public class IspindelControllerTests{
 
     @Test
     public void getTemperaturesTest() throws Exception{
-//        List<Student> students = new ArrayList<>();
-//        Student student = new Student();
-//        student.setId(1);
-//        student.setName("Arun");
-//        students.add(student);
         Temperatures temperatures = new Temperatures();
         temperatures.appendTemperature((float) 10.01);
         temperatures.appendTemperature((float) 10.02);
@@ -48,5 +46,27 @@ public class IspindelControllerTests{
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dateTime", Matchers.hasSize(2)))
                 .andExpect(jsonPath("$.temperature[0]", Matchers.equalTo(10.01)));
+    }
+
+    @Test
+    public void postIspindelDataTest() throws Exception{
+
+        ObjectMapper mapper = new ObjectMapper();
+        ISpindelData data = new ISpindelData("name", 12345, "token", (float)12.23,
+                (float)20.01, "C", (float)3.5, (float)1.160, 30, -72);
+        String json = mapper.writeValueAsString(data);
+
+        Temperatures temperatures = new Temperatures();
+        temperatures.appendTemperature((float) 10.01);
+        temperatures.appendTemperature((float) 10.02);
+        Mockito.when(temperatureFileConnector.writeTemperatures(ArgumentMatchers.any())).thenReturn(true);
+        Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
+
+        mockMvc.perform(post("/brewery/ispindel")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(json)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
     }
 }

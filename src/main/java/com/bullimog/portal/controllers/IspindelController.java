@@ -20,8 +20,11 @@ public class IspindelController {
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
         Temperatures t = tfc.readTemperatures();
         t.appendTemperature(isd.getTemperature());
-        tfc.writeTemperatures(t);
-        return new ResponseEntity<String>("Done it!", HttpStatus.CREATED);
+        if (tfc.writeTemperatures(t)) {
+            return new ResponseEntity<String>("Done it!", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<String>("Done it!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/temperatures")
