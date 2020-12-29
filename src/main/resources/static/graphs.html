@@ -5,18 +5,18 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-<div id="myDiv" style="width:1100px;height:250px;"></div>
+<div id="temperatureDiv" style="width:1100px;height:250px;"></div>
+<div id="batteryDiv" style="width:1100px;height:250px;"></div>
 
 
 <script>
+//************ Temperatures **************
+var temperature_ys = [];
+var temperature_xs = [];
 
-var d = new Date();
-var ys = [];
-var xs = [];
-
-var trace1 = {
-  x: xs,
-  y: ys,
+var temperatures = {
+  x: temperature_xs,
+  y: temperature_ys,
   mode: 'lines',
   name: 'iSpindel',
   connectgaps: true,
@@ -26,9 +26,9 @@ var trace1 = {
   }
 };
 
-var data = [trace1];
+var temperatureData = [temperatures];
 
-var layout = {
+var temperatureLayout = {
   title:'iSpindel',
   xaxis: {
 //    title: 'Date / Time'
@@ -46,34 +46,105 @@ var layout = {
   }
 };
 
-Plotly.newPlot('myDiv', data, layout);
+Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
 
+function clearData(anArray){
+    while(anArray.length>0){anArray.pop();}
+}
 
-function fjson(){
+function fetchTemperaturesJson(){
   fetch("/brewery/temperatures")
   .then(function (response) {
     return response.json();
   })
   .then(function (myJson) {
-    //clear old data
-    while(ys.length>0){ys.pop();}
-    while(xs.length>0){xs.pop();}
+    clearData(temperature_ys);
+    clearData(temperature_xs);
 
     //add new data.
     for(var n=0; n<myJson.temperature.length; n++){
-      ys.push(myJson.temperature[n]);
-      xs.push(myJson.dateTime[n]);
+      temperature_ys.push(myJson.temperature[n]);
+      temperature_xs.push(myJson.dateTime[n]);
     }
 
-    Plotly.newPlot('myDiv', data, layout);
-    setTimeout(fjson, 5000);
+//    Plotly.update??
+    Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
+    setTimeout(fetchTemperaturesJson, 5000);
   })
   .catch(function (error) {
     console.log("Error: " + error);
   });
 }
 
-setTimeout(fjson, 500);
+setTimeout(fetchTemperaturesJson, 500);
+
+
+//************ Battery Graph **************
+var battery_ys = [];
+var battery_xs = [];
+
+var battery = {
+  x: battery_xs,
+  y: battery_ys,
+  mode: 'lines',
+  name: 'iSpindel',
+  connectgaps: true,
+  line: {
+    color: 'rgb(0, 0, 150)',
+    width: 1
+  }
+};
+
+var batteryData = [battery];
+
+var batteryLayout = {
+  title:'iSpindel',
+  xaxis: {
+//    title: 'Date / Time'
+  },
+  yaxis: {
+    title: 'volts'
+  },
+  paper_bgcolor: '#f5f5f5',
+  plot_bgcolor: '#eeeeff',
+  margin:{
+    t: 25,
+    r: 10,
+    l: 55,
+    b: 30
+  }
+};
+
+Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
+
+function fetchBatteryJson(){
+  fetch("/brewery/batteries")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    clearData(battery_ys);
+    clearData(battery_xs);
+
+    //add new data.
+    for(var n=0; n<myJson.batteries.length; n++){
+      battery_ys.push(myJson.batteries[n]);
+      battery_xs.push(myJson.dateTime[n]);
+    }
+
+//    Plotly.update??
+    Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
+    setTimeout(fetchBatteryJson, 5000);
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+  });
+}
+
+
+// ******************* Initial load of graph data
+fetchTemperaturesJson();
+fetchBatteryJson();
 </script>
 </body>
 </html>

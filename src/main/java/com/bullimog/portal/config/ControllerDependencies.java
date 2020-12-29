@@ -2,6 +2,8 @@ package com.bullimog.portal.config;
 
 import com.bullimog.portal.connectors.TemperatureFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnectorImpl;
+import com.bullimog.portal.connectors.BatteryFileConnector;
+import com.bullimog.portal.connectors.BatteryFileConnectorImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,13 @@ import org.springframework.context.annotation.Configuration;
 public class ControllerDependencies {
 
     @Bean
-    public TemperatureFileConnector getHttpConnection(@Value("${temperature.filename}") String filename) {
+    public BatteryFileConnector getBatteryFileConnector(@Value("${battery.filename}") String filename) {
+        return new BatteryFileConnectorImpl(filename);
+    }
+    @Bean
+    public TemperatureFileConnector getTemperatureFileConnector(@Value("${temperature.filename}") String filename) {
         return new TemperatureFileConnectorImpl(filename);
     }
+
+
 }

@@ -1,7 +1,9 @@
 package com.bullimog.portal.controllers;
 
+import com.bullimog.portal.connectors.BatteryFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnectorImpl;
+import com.bullimog.portal.models.Batteries;
 import com.bullimog.portal.models.ISpindelData;
 import com.bullimog.portal.models.Temperatures;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +36,9 @@ public class IspindelControllerTests{
     @MockBean
     TemperatureFileConnector temperatureFileConnector;
 
+    @MockBean
+    BatteryFileConnector batteryFileConnector;
+
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Test
@@ -61,6 +66,11 @@ public class IspindelControllerTests{
         temperatures.appendTemperature((float) 10.02);
         Mockito.when(temperatureFileConnector.writeTemperatures(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
+        Batteries batteries = new Batteries();
+        batteries.appendBattery((float) 3.5);
+        batteries.appendBattery((float) 3.6);
+        Mockito.when(batteryFileConnector.writeBatteries(ArgumentMatchers.any())).thenReturn(true);
+        Mockito.when(batteryFileConnector.readBatteries()).thenReturn(batteries);
 
         mockMvc.perform(post("/brewery/ispindel")
                 .contentType(MediaType.APPLICATION_JSON)
