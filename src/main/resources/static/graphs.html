@@ -10,47 +10,65 @@
 
 
 <script>
-//************ Temperatures **************
-var temperature_ys = [];
-var temperature_xs = [];
+//************** Common **********
+function getLayout(aTitle, yAxisTitle){
+    var layout = {
+        title:aTitle,
+        xaxis: {
+            //title: 'Date / Time'
+        },
+        yaxis: {
+            title: yAxisTitle
+        },
+        paper_bgcolor: '#f5f5f5',
+        plot_bgcolor: '#eeeeff',
+        margin:{
+            t: 25,
+            r: 10,
+            l: 55,
+            b: 30
+        }
+    };
+    return layout;
+}
 
-var temperatures = {
-  x: temperature_xs,
-  y: temperature_ys,
-  mode: 'lines',
-  name: 'iSpindel',
-  connectgaps: true,
-  line: {
-    color: 'rgb(0, 0, 150)',
-    width: 1
-  }
-};
-
-var temperatureData = [temperatures];
-
-var temperatureLayout = {
-  title:'iSpindel',
-  xaxis: {
-//    title: 'Date / Time'
-  },
-  yaxis: {
-    title: 'Temperatue &#176;C'
-  },
-  paper_bgcolor: '#f5f5f5',
-  plot_bgcolor: '#eeeeff',
-  margin:{
-    t: 25,
-    r: 10,
-    l: 55,
-    b: 30
-  }
-};
-
-Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
+function buildData(xs, ys, aName){
+    var theData = {
+        x: xs,
+        y: ys,
+        mode: 'lines',
+        name: aName,
+        connectgaps: true,
+        line: {
+            color: 'rgb(0, 0, 150)',
+            width: 1
+        }
+    };
+    return theData;
+}
 
 function clearData(anArray){
     while(anArray.length>0){anArray.pop();}
 }
+
+function refreshData(xs, ys, dateTime, theData){
+    clearData(ys);
+    clearData(xs);
+
+    //add new data.
+    for(var n=0; n<dateTime.length; n++){
+      ys.push(theData[n]);
+      xs.push(dateTime[n]);
+    }
+}
+
+//************ Temperatures **************
+var temperature_ys = [];
+var temperature_xs = [];
+var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel');
+var temperatureData = [temperatures];
+var temperatureLayout = getLayout('Temperature','&#176;Celsius');
+Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
 
 function fetchTemperaturesJson(){
   fetch("/brewery/temperatures")
@@ -58,17 +76,8 @@ function fetchTemperaturesJson(){
     return response.json();
   })
   .then(function (myJson) {
-    clearData(temperature_ys);
-    clearData(temperature_xs);
-
-    //add new data.
-    for(var n=0; n<myJson.temperature.length; n++){
-      temperature_ys.push(myJson.temperature[n]);
-      temperature_xs.push(myJson.dateTime[n]);
-    }
-
-//    Plotly.update??
-    Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
+    refreshData(temperature_xs, temperature_ys,myJson.dateTime, myJson.temperature);
+    Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
     setTimeout(fetchTemperaturesJson, 5000);
   })
   .catch(function (error) {
@@ -76,45 +85,12 @@ function fetchTemperaturesJson(){
   });
 }
 
-setTimeout(fetchTemperaturesJson, 500);
-
-
 //************ Battery Graph **************
 var battery_ys = [];
 var battery_xs = [];
-
-var battery = {
-  x: battery_xs,
-  y: battery_ys,
-  mode: 'lines',
-  name: 'iSpindel',
-  connectgaps: true,
-  line: {
-    color: 'rgb(0, 0, 150)',
-    width: 1
-  }
-};
-
+var battery = buildData(battery_xs, battery_ys, 'iSpindel Battery');
 var batteryData = [battery];
-
-var batteryLayout = {
-  title:'iSpindel',
-  xaxis: {
-//    title: 'Date / Time'
-  },
-  yaxis: {
-    title: 'volts'
-  },
-  paper_bgcolor: '#f5f5f5',
-  plot_bgcolor: '#eeeeff',
-  margin:{
-    t: 25,
-    r: 10,
-    l: 55,
-    b: 30
-  }
-};
-
+var batteryLayout = getLayout('iSpindel Battery', 'Volts');
 Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
 
 function fetchBatteryJson(){
@@ -123,17 +99,8 @@ function fetchBatteryJson(){
     return response.json();
   })
   .then(function (myJson) {
-    clearData(battery_ys);
-    clearData(battery_xs);
-
-    //add new data.
-    for(var n=0; n<myJson.batteries.length; n++){
-      battery_ys.push(myJson.batteries[n]);
-      battery_xs.push(myJson.dateTime[n]);
-    }
-
-//    Plotly.update??
-    Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
+    refreshData(battery_xs, battery_ys,myJson.dateTime, myJson.batteries);
+    Plotly.update('batteryDiv', batteryData, batteryLayout);
     setTimeout(fetchBatteryJson, 5000);
   })
   .catch(function (error) {
