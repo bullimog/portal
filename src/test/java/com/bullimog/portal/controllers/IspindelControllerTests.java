@@ -49,8 +49,8 @@ public class IspindelControllerTests{
     @Test
     public void getTemperaturesTest() throws Exception{
         Temperatures temperatures = new Temperatures();
-        temperatures.appendTemperature((float) 10.01);
-        temperatures.appendTemperature((float) 10.02);
+        temperatures.appendTemperature(10.01);
+        temperatures.appendTemperature(10.02);
         Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
         mockMvc.perform(get("/brewery/temperatures"))
                 .andExpect(status().isOk())
@@ -62,25 +62,25 @@ public class IspindelControllerTests{
     public void postIspindelDataTest() throws Exception{
 
         ObjectMapper mapper = new ObjectMapper();
-        ISpindelData data = new ISpindelData("name", 12345, "token", (float)12.23,
-                (float)20.01, "C", (float)3.5, (float)1.160, 30, -72);
+        ISpindelData data = new ISpindelData("name", 12345, "token", 12.23,
+                20.01, "C", 3.5, 1.160, 30, -72);
         String json = mapper.writeValueAsString(data);
 
         Temperatures temperatures = new Temperatures();
-        temperatures.appendTemperature((float) 10.01);
-        temperatures.appendTemperature((float) 10.02);
+        temperatures.appendTemperature(10.01);
+        temperatures.appendTemperature(10.02);
         Mockito.when(temperatureFileConnector.writeTemperatures(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
 
         Batteries batteries = new Batteries();
-        batteries.appendBattery((float) 3.5);
-        batteries.appendBattery((float) 3.6);
+        batteries.appendBattery(3.5);
+        batteries.appendBattery(3.6);
         Mockito.when(batteryFileConnector.writeBatteries(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(batteryFileConnector.readBatteries()).thenReturn(batteries);
 
         Gravities gravities = new Gravities();
-        gravities.appendGravity((float) 1.040);
-        gravities.appendGravity((float) 1.045);
+        gravities.appendGravity(1.040);
+        gravities.appendGravity(1.045);
         Mockito.when(gravityFileConnector.writeGravities(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(gravityFileConnector.readGravities()).thenReturn(gravities);
 

@@ -5,24 +5,24 @@ import java.util.ArrayList;
 
 public class Gravities {
     private ArrayList<LocalDateTime> dateTimes;
-    private  ArrayList<Float> gravities;
+    private ArrayList<Double> gravities;
 
     public Gravities(){
         dateTimes = new ArrayList<LocalDateTime>();
-        gravities = new ArrayList<Float>();
+        gravities = new ArrayList<Double>();
     }
 
-    public Gravities(ArrayList<LocalDateTime> dateTimes, ArrayList<Float> gravities){
+    public Gravities(ArrayList<LocalDateTime> dateTimes, ArrayList<Double> gravities){
         this.dateTimes = dateTimes;
         this.gravities = gravities;
     }
 
-    public void appendGravity(Float gravity){
+    public void appendGravity(Double gravity){
         LocalDateTime date = LocalDateTime.now();
         dateTimes.add(date);
         gravities.add(gravity);
     }
 
     public ArrayList<LocalDateTime> getdateTime() {return dateTimes;}
-    public ArrayList<Float> getGravities(){return gravities;}
+    public ArrayList<Double> getGravities(){return gravities;}
 }

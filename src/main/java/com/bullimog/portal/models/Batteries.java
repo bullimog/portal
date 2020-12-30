@@ -5,24 +5,24 @@ import java.time.LocalDateTime;
 public class Batteries {
 
     private  ArrayList<LocalDateTime> dateTimes;
-    private  ArrayList<Float> batteries;
+    private  ArrayList<Double> batteries;
 
     public Batteries(){
         dateTimes = new ArrayList<LocalDateTime>();
-        batteries = new ArrayList<Float>();
+        batteries = new ArrayList<Double>();
     }
 
-    public Batteries(ArrayList<LocalDateTime> dateTimes, ArrayList<Float> batteries){
+    public Batteries(ArrayList<LocalDateTime> dateTimes, ArrayList<Double> batteries){
         this.dateTimes = dateTimes;
         this.batteries = batteries;
     }
 
-    public void appendBattery(Float battery){
+    public void appendBattery(Double battery){
         LocalDateTime date = LocalDateTime.now();
         dateTimes.add(date);
         batteries.add(battery);
     }
 
     public ArrayList<LocalDateTime> getdateTime() {return dateTimes;}
-    public ArrayList<Float> getBatteries(){return batteries;}
+    public ArrayList<Double> getBatteries(){return batteries;}
 }

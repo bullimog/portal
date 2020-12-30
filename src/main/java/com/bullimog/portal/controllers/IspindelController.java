@@ -38,8 +38,8 @@ public class IspindelController {
         boolean batteryWritten = bfc.writeBatteries(b);
 
         Gravities g = gfc.readGravities();
-        Float tilt = isd.getAngle();
-        Float gravity = (float) (0.8829738953763338 + 0.006232944160223315 * tilt - 0.00009307076837167256 * tilt * tilt + 6.366267580822437e-7 * tilt * tilt * tilt);
+        Double tilt = isd.getAngle();
+        Double gravity = 0.8829738953763338 + 0.006232944160223315 * tilt - 0.00009307076837167256 * tilt * tilt + 6.366267580822437e-7 * tilt * tilt * tilt;
         g.appendGravity(gravity);
         boolean gravityWritten = gfc.writeGravities(g);
 

@@ -4,16 +4,16 @@ public class ISpindelData {
     String name;
     Integer ID;
     String token;
-    Float angle;
-    Float temperature;
+    Double angle;
+    Double temperature;
     String temp_units;
-    Float battery;
-    Float gravity;
+    Double battery;
+    Double gravity;
     Integer interval;
     Integer RSSI;
 
-    public ISpindelData(String name, Integer ID, String token, Float angle, Float temperature,
-                        String temp_units, Float battery, Float gravity, Integer interval, Integer RSSI){
+    public ISpindelData(String name, Integer ID, String token, Double angle, Double temperature,
+                        String temp_units, Double battery, Double gravity, Integer interval, Integer RSSI){
         this.name=name;
         this.ID=ID;
         this.token=token;
@@ -30,16 +30,16 @@ public class ISpindelData {
     public String getName() {return name;}
     public Integer getID(){return ID;}
     public String getToken(){return token;}
-    public Float getAngle(){return this.angle;}
+    public Double getAngle(){return this.angle;}
 
-    public Float getTemperature(){
+    public Double getTemperature(){
         return this.temperature;
     }
     public String getTemp_Units(){
         return this.temp_units;
     }
-    public Float getBattery(){return this.battery;}
-    public Float getGravity(){
+    public Double getBattery(){return this.battery;}
+    public Double getGravity(){
         return gravity;
     }
     public Integer getInterval(){
