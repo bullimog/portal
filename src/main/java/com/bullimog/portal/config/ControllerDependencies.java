@@ -1,9 +1,6 @@
 package com.bullimog.portal.config;
 
-import com.bullimog.portal.connectors.TemperatureFileConnector;
-import com.bullimog.portal.connectors.TemperatureFileConnectorImpl;
-import com.bullimog.portal.connectors.BatteryFileConnector;
-import com.bullimog.portal.connectors.BatteryFileConnectorImpl;
+import com.bullimog.portal.connectors.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +19,9 @@ public class ControllerDependencies {
     public TemperatureFileConnector getTemperatureFileConnector(@Value("${temperature.filename}") String filename) {
         return new TemperatureFileConnectorImpl(filename);
     }
-
+    @Bean
+    public GravityFileConnector getGravityFileConnector(@Value("${gravity.filename}") String filename) {
+        return new GravityFileConnectorImpl(filename);
+    }
 
 }

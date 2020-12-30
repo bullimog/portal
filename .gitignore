@@ -1,6 +1,7 @@
 HELP.md
 temperatures.json
 battery.json
+gravity.json
 target/
 mvn/
 !.mvn/wrapper/maven-wrapper.jar

@@ -5,9 +5,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-<div id="temperatureDiv" style="width:1100px;height:250px;"></div>
-<div id="batteryDiv" style="width:1100px;height:250px;"></div>
-
+<div id="temperatureDiv" style="width:1200px;height:200px;"></div>
+<div id="gravityDiv" style="width:1200px;height:200px;"></div>
+<div id="batteryDiv" style="width:1200px;height:200px;"></div>
 
 <script>
 //************** Common **********
@@ -20,7 +20,7 @@ function getLayout(aTitle, yAxisTitle){
         yaxis: {
             title: yAxisTitle
         },
-        paper_bgcolor: '#f5f5f5',
+        paper_bgcolor: '#fefefe',
         plot_bgcolor: '#eeeeff',
         margin:{
             t: 25,
@@ -55,8 +55,7 @@ function refreshData(xs, ys, dateTime, theData){
     clearData(ys);
     clearData(xs);
 
-    //add new data.
-    for(var n=0; n<dateTime.length; n++){
+    for(n=0; n<dateTime.length; n++){
       ys.push(theData[n]);
       xs.push(dateTime[n]);
     }
@@ -108,10 +107,34 @@ function fetchBatteryJson(){
   });
 }
 
+//************ Gravity Graph **************
+var gravity_ys = [];
+var gravity_xs = [];
+var gravity = buildData(gravity_xs, gravity_ys, 'Gravity');
+var gravityData = [gravity];
+var gravityLayout = getLayout('Gravity', 'SG');
+Plotly.newPlot('gravityDiv', gravityData, gravityLayout);
+
+function fetchGravityJson(){
+  fetch("/brewery/gravities")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    refreshData(gravity_xs, gravity_ys, myJson.dateTime, myJson.gravities);
+    Plotly.update('gravityDiv', gravityData, gravityLayout);
+    setTimeout(fetchGravityJson, 5000);
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+  });
+}
+
 
 // ******************* Initial load of graph data
 fetchTemperaturesJson();
 fetchBatteryJson();
+fetchGravityJson();
 </script>
 </body>
 </html>
