@@ -33,15 +33,12 @@ public class IspindelController {
     @Value("${gravity.calc.degree3.2}") Double degree32;
     @Value("${gravity.calc.degree3.3}") Double degree33;
     @Value("${gravity.calc.degree3.4}") Double degree34;
-    @Value("${gravity.calc.temp.num0}") Double num0;
-    @Value("${gravity.calc.temp.num1}") Double num1;
-    @Value("${gravity.calc.temp.num2}") Double num2;
-    @Value("${gravity.calc.temp.num3}") Double num3;
+
     GravityConfig gravityConfig;
 
     @RequestMapping(value = "/ispindel", method = RequestMethod.POST)
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
-        gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34,num0,num1,num2,num3);
+        gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34);
         GravityUtils gu = new GravityUtils(gravityConfig);
         Temperatures t = tfc.readTemperatures();
         Double temperature = isd.getTemperature();

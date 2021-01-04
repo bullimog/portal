@@ -4,6 +4,12 @@ import com.bullimog.portal.config.GravityConfig;
 
 public class GravityUtils {
 
+    //constants for calculating temperature effect on SG.
+    private static final Double num0 = 1.00130346;
+    private static final Double num1 = 0.000134722124;
+    private static final Double num2 = 0.00000204052596;
+    private static final Double num3 = 0.00000000232820948;
+
     GravityConfig gravityConfig;
     public GravityUtils(GravityConfig gravityConfig) {
         this.gravityConfig=gravityConfig;
@@ -21,10 +27,6 @@ public class GravityUtils {
 
     private static final Double calibratedTemp = 55.40; //13c
     public Double adjustGravityForTemperatureF(Double gravity, Double measuredTemp){
-        Double num0 = gravityConfig.getNum0();
-        Double num1 = gravityConfig.getNum1();
-        Double num2 = gravityConfig.getNum2();
-        Double num3 = gravityConfig.getNum3();
         Double adjustedGravity = gravity*(
                 (num0-num1*measuredTemp+
                         num2*measuredTemp*measuredTemp-
@@ -37,8 +39,12 @@ public class GravityUtils {
         return rounded;
     }
 
+    public Double celsiusToFahrenheit(Double celsius) {
+        return (celsius* 9/5)+32;
+    }
+
     public Double adjustGravityForTemperatureC(Double gravity, Double measuredTemp){
-        Double measuredTempF = (measuredTemp* 9/5)+32;
+        Double measuredTempF = celsiusToFahrenheit(measuredTemp);
         Double adjustedGravity = adjustGravityForTemperatureF(gravity, measuredTempF);
         double rounded = Math.round(adjustedGravity * 10000.0) / 10000.0;
         return rounded;

@@ -12,11 +12,8 @@ public class GravitiesTests {
         Double degree32 = 0.006232944160223315;
         Double degree33 = 0.00009307076837167256;
         Double degree34 = 6.366267580822437e-7;
-        Double num0 = 1.00130346;
-        Double num1 = 0.000134722124;
-        Double num2 = 0.00000204052596;
-        Double num3 = 0.00000000232820948;
-        GravityConfig gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34,num0,num1,num2,num3);
+
+        GravityConfig gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34);
         GravityUtils gravityUtils= new GravityUtils(gravityConfig);
 
         Double result = gravityUtils.adjustGravityForTemperatureF(1.040, 59.0);
