@@ -1,6 +1,6 @@
 package com.bullimog.portal.util;
 
-import com.bullimog.portal.config.GravityConfig;
+import com.bullimog.portal.models.Calibration;
 
 public class GravityUtils {
 
@@ -10,17 +10,17 @@ public class GravityUtils {
     private static final Double num2 = 0.00000204052596;
     private static final Double num3 = 0.00000000232820948;
 
-    GravityConfig gravityConfig;
-    public GravityUtils(GravityConfig gravityConfig) {
-        this.gravityConfig=gravityConfig;
+    Calibration calibration;
+    public GravityUtils(Calibration calibration) {
+        this.calibration=calibration;
     }
 
     public Double calculateGravity(Double tilt) {
         Double calculatedGravity =
-                gravityConfig.getDegree31() +
-                        gravityConfig.getDegree32() * tilt -
-                        gravityConfig.getDegree33() * tilt * tilt +
-                        gravityConfig.getDegree34() * tilt * tilt * tilt;
+                calibration.getDegree3_1() +
+                        calibration.getDegree3_2() * tilt -
+                        calibration.getDegree3_3() * tilt * tilt +
+                        calibration.getDegree3_4() * tilt * tilt * tilt;
 
         return calculatedGravity;
     }

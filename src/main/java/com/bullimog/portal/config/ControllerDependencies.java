@@ -21,4 +21,8 @@ public class ControllerDependencies {
     public GravityFileConnector getGravityFileConnector(@Value("${gravity.filename}") String filename) {
         return new GravityFileConnectorImpl(filename);
     }
+    @Bean
+    public CalibrationFileConnector getCalibrationFileConnector(@Value("${calibration.filename}") String filename) {
+        return new CalibrationFileConnectorImpl(filename);
+    }
 }

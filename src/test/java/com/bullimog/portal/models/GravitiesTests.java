@@ -1,6 +1,5 @@
 package com.bullimog.portal.models;
 
-import com.bullimog.portal.config.GravityConfig;
 import com.bullimog.portal.util.GravityUtils;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,8 +12,8 @@ public class GravitiesTests {
         Double degree33 = 0.00009307076837167256;
         Double degree34 = 6.366267580822437e-7;
 
-        GravityConfig gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34);
-        GravityUtils gravityUtils= new GravityUtils(gravityConfig);
+        Calibration calibration = new Calibration(degree31,degree32,degree33,degree34);
+        GravityUtils gravityUtils= new GravityUtils(calibration);
 
         Double result = gravityUtils.adjustGravityForTemperatureF(1.040, 59.0);
         Double expected = 1.0403;

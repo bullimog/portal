@@ -1,13 +1,7 @@
 package com.bullimog.portal.controllers;
 
-import com.bullimog.portal.connectors.BatteryFileConnector;
-import com.bullimog.portal.connectors.GravityFileConnector;
-import com.bullimog.portal.connectors.TemperatureFileConnector;
-import com.bullimog.portal.connectors.TemperatureFileConnectorImpl;
-import com.bullimog.portal.models.Batteries;
-import com.bullimog.portal.models.Gravities;
-import com.bullimog.portal.models.ISpindelData;
-import com.bullimog.portal.models.Temperatures;
+import com.bullimog.portal.connectors.*;
+import com.bullimog.portal.models.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.mockito.ArgumentMatchers;
@@ -44,6 +38,9 @@ public class IspindelControllerTests{
 
     @MockBean
     GravityFileConnector gravityFileConnector;
+
+    @MockBean
+    CalibrationFileConnector calibrationFileConnector;
 
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -84,6 +81,9 @@ public class IspindelControllerTests{
         gravities.appendGravity(1.045, 1.040);
         Mockito.when(gravityFileConnector.writeGravities(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(gravityFileConnector.readGravities()).thenReturn(gravities);
+
+        Calibration calibration = new Calibration(0.0,0.0,0.0,0.0);
+        Mockito.when(calibrationFileConnector.readCalibration()).thenReturn(calibration);
 
         mockMvc.perform(post("/brewery/ispindel")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -1,7 +1,7 @@
 package com.bullimog.portal.controllers;
 
-import com.bullimog.portal.config.GravityConfig;
 import com.bullimog.portal.connectors.BatteryFileConnector;
+import com.bullimog.portal.connectors.CalibrationFileConnector;
 import com.bullimog.portal.connectors.GravityFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnector;
 import com.bullimog.portal.models.Batteries;
@@ -9,7 +9,6 @@ import com.bullimog.portal.models.Gravities;
 import com.bullimog.portal.models.ISpindelData;
 import com.bullimog.portal.util.GravityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +28,12 @@ public class IspindelController {
     @Autowired //using config.ControllerDependencies
     GravityFileConnector gfc;
 
-    @Value("${gravity.calc.degree3.1}") Double degree31;
-    @Value("${gravity.calc.degree3.2}") Double degree32;
-    @Value("${gravity.calc.degree3.3}") Double degree33;
-    @Value("${gravity.calc.degree3.4}") Double degree34;
-
-    GravityConfig gravityConfig;
+    @Autowired //using config.ControllerDependencies
+    CalibrationFileConnector cfc;
 
     @RequestMapping(value = "/ispindel", method = RequestMethod.POST)
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
-        gravityConfig = new GravityConfig(degree31,degree32,degree33,degree34);
-        GravityUtils gu = new GravityUtils(gravityConfig);
+        GravityUtils gu = new GravityUtils(cfc.readCalibration());
         Temperatures t = tfc.readTemperatures();
         Double temperature = isd.getTemperature();
         t.appendTemperature(temperature);
