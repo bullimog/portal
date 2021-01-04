@@ -5,9 +5,9 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-<div id="temperatureDiv" style="width:1200px;height:200px;"></div>
-<div id="gravityDiv" style="width:1200px;height:200px;"></div>
-<div id="batteryDiv" style="width:1200px;height:200px;"></div>
+<div id="temperatureDiv" style="width:1145px;height:200px;"></div>
+<div id="gravityDiv" style="width:1300px;height:200px;"></div>
+<div id="batteryDiv" style="width:1145px;height:200px;"></div>
 
 <script>
 //************** Common **********
@@ -32,7 +32,7 @@ function getLayout(aTitle, yAxisTitle){
     return layout;
 }
 
-function buildData(xs, ys, aName){
+function buildData(xs, ys, aName, lineColor){
     var theData = {
         x: xs,
         y: ys,
@@ -40,7 +40,7 @@ function buildData(xs, ys, aName){
         name: aName,
         connectgaps: true,
         line: {
-            color: 'rgb(0, 0, 150)',
+            color: lineColor,
             width: 1
         }
     };
@@ -64,7 +64,7 @@ function refreshData(xs, ys, dateTime, theData){
 //************ Temperatures **************
 var temperature_ys = [];
 var temperature_xs = [];
-var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel');
+var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel', 'rgb(0, 0, 150)');
 var temperatureData = [temperatures];
 var temperatureLayout = getLayout('Temperature','&#176;Celsius');
 Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
@@ -87,7 +87,7 @@ function fetchTemperaturesJson(){
 //************ Battery Graph **************
 var battery_ys = [];
 var battery_xs = [];
-var battery = buildData(battery_xs, battery_ys, 'iSpindel Battery');
+var battery = buildData(battery_xs, battery_ys, 'iSpindel Battery', 'rgb(0, 0, 150)');
 var batteryData = [battery];
 var batteryLayout = getLayout('iSpindel Battery', 'Volts');
 Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
@@ -110,8 +110,11 @@ function fetchBatteryJson(){
 //************ Gravity Graph **************
 var gravity_ys = [];
 var gravity_xs = [];
-var gravity = buildData(gravity_xs, gravity_ys, 'Gravity');
-var gravityData = [gravity];
+var gravity = buildData(gravity_xs, gravity_ys, 'Gravity', 'rgb(0, 0, 150)');
+var adjGravity_ys = [];
+var adjGravity_xs = [];
+var adjGravity = buildData(adjGravity_xs, adjGravity_ys, 'Adjusted Gravity', 'rgb(0, 100, 100)');
+var gravityData = [gravity, adjGravity];
 var gravityLayout = getLayout('Gravity', 'SG');
 Plotly.newPlot('gravityDiv', gravityData, gravityLayout);
 
@@ -122,6 +125,7 @@ function fetchGravityJson(){
   })
   .then(function (myJson) {
     refreshData(gravity_xs, gravity_ys, myJson.dateTime, myJson.gravities);
+    refreshData(adjGravity_xs, adjGravity_ys, myJson.dateTime, myJson.adjustedGravities);
     Plotly.update('gravityDiv', gravityData, gravityLayout);
     setTimeout(fetchGravityJson, 5000);
   })

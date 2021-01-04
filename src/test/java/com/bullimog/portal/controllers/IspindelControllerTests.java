@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.mockito.Mockito;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -79,8 +80,8 @@ public class IspindelControllerTests{
         Mockito.when(batteryFileConnector.readBatteries()).thenReturn(batteries);
 
         Gravities gravities = new Gravities();
-        gravities.appendGravity(1.040);
-        gravities.appendGravity(1.045);
+        gravities.appendGravity(1.040, 1.40);
+        gravities.appendGravity(1.045, 1.040);
         Mockito.when(gravityFileConnector.writeGravities(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(gravityFileConnector.readGravities()).thenReturn(gravities);
 
