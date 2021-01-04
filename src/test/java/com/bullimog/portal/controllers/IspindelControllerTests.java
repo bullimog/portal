@@ -82,7 +82,7 @@ public class IspindelControllerTests{
         Mockito.when(gravityFileConnector.writeGravities(ArgumentMatchers.any())).thenReturn(true);
         Mockito.when(gravityFileConnector.readGravities()).thenReturn(gravities);
 
-        Calibration calibration = new Calibration(0.0,0.0,0.0,0.0);
+        Calibration calibration = new Calibration(0.0,0.0,0.0,0.0,0.0);
         Mockito.when(calibrationFileConnector.readCalibration()).thenReturn(calibration);
 
         mockMvc.perform(post("/brewery/ispindel")

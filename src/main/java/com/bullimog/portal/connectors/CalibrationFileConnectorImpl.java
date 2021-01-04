@@ -20,7 +20,7 @@ public class CalibrationFileConnectorImpl implements CalibrationFileConnector {
                 .findAndRegisterModules()
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        Calibration c = new Calibration(0.0,0.0,0.0,0.0);
+        Calibration c = new Calibration(0.0,0.0,0.0,0.0, 0.0);
         try {
             c = mapper.readValue(Paths.get(filename).toFile(), Calibration.class);
         }catch(IOException ex){

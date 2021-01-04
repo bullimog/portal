@@ -25,8 +25,8 @@ public class GravityUtils {
         return calculatedGravity;
     }
 
-    private static final Double calibratedTemp = 55.40; //13c
     public Double adjustGravityForTemperatureF(Double gravity, Double measuredTemp){
+        Double calibratedTemp = calibration.getCalibratedTemperatureFahrenheit();
         Double adjustedGravity = gravity*(
                 (num0-num1*measuredTemp+
                         num2*measuredTemp*measuredTemp-
@@ -35,8 +35,7 @@ public class GravityUtils {
                                 num2*calibratedTemp*calibratedTemp-
                                 num3*calibratedTemp*calibratedTemp*calibratedTemp));
 
-        double rounded = Math.round(adjustedGravity * 10000.0) / 10000.0;
-        return rounded;
+        return Math.round(adjustedGravity * 10000.0) / 10000.0;
     }
 
     public Double celsiusToFahrenheit(Double celsius) {

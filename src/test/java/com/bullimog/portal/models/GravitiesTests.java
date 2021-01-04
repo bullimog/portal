@@ -11,8 +11,10 @@ public class GravitiesTests {
         Double degree32 = 0.006232944160223315;
         Double degree33 = 0.00009307076837167256;
         Double degree34 = 6.366267580822437e-7;
+        Double calibratedTemperatureFahrenheit = 55.40;
 
-        Calibration calibration = new Calibration(degree31,degree32,degree33,degree34);
+        Calibration calibration = new Calibration(degree31,degree32,degree33,degree34,
+                calibratedTemperatureFahrenheit);
         GravityUtils gravityUtils= new GravityUtils(calibration);
 
         Double result = gravityUtils.adjustGravityForTemperatureF(1.040, 59.0);
