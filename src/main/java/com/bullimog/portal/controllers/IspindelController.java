@@ -48,7 +48,6 @@ public class IspindelController {
         Double calculatedGravity = gu.calculateGravity(tilt);
         Double adjustedGravity = gu.adjustGravityForTemperatureC(calculatedGravity, temperature);
         g.appendGravity(isd.getGravity(), adjustedGravity);
-//        g.appendGravity(isd.getGravity(), isd.getGravity());
         boolean gravityWritten = gfc.writeGravities(g);
 
         if (temperatureWritten && batteryWritten && gravityWritten) {
