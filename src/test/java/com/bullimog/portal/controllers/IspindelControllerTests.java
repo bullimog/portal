@@ -42,6 +42,9 @@ public class IspindelControllerTests{
     @MockBean
     CalibrationFileConnector calibrationFileConnector;
 
+    @MockBean
+    FermentTemperaturesFileConnector fermentTemperaturesFileConnector;
+
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Test

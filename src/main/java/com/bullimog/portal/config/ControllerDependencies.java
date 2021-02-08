@@ -25,4 +25,8 @@ public class ControllerDependencies {
     public CalibrationFileConnector getCalibrationFileConnector(@Value("${calibration.filename}") String filename) {
         return new CalibrationFileConnectorImpl(filename);
     }
+    @Bean
+    public FermentTemperaturesFileConnector getFermentTemperaturesFileConnector(@Value("${fermenttemperatures.filename}") String filename) {
+        return new FermentTemperaturesFileConnectorImpl(filename);
+    }
 }
