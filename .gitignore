@@ -2,6 +2,9 @@ HELP.md
 temperatures.json
 battery.json
 gravity.json
+fermenttemperatures.json
+fermentheatcool.json
+fermentbubbles.json
 target/
 mvn/
 !.mvn/wrapper/maven-wrapper.jar

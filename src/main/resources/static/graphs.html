@@ -5,20 +5,27 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
-<div id="temperatureDiv" style="width:1145px;height:200px;"></div>
+<div id="temperatureDiv" style="width:1250px;height:200px;"></div>
+<br/><br/>
+<div id="heatCoolsDiv" style="width:1250px;height:100px;"></div>
+<br/><br/>
 <div id="gravityDiv" style="width:1300px;height:200px;"></div>
+<br/><br/>
+<div id="bubblesDiv" style="width:1145px;height:200px;"></div>
+<br/><br/>
 <div id="batteryDiv" style="width:1145px;height:200px;"></div>
 
 <script>
 //************** Common **********
-function getLayout(aTitle, yAxisTitle){
+function getLayout(aTitle, yAxisTitle, numOfTicks){
     var layout = {
         title:aTitle,
         xaxis: {
             //title: 'Date / Time'
         },
         yaxis: {
-            title: yAxisTitle
+            title: yAxisTitle,
+            nticks: numOfTicks
         },
         paper_bgcolor: '#fefefe',
         plot_bgcolor: '#eeeeff',
@@ -62,26 +69,41 @@ function refreshData(xs, ys, dateTime, theData){
 }
 
 //************ Temperatures **************
+var shedTemp_ys = [];
+var shedTemp_xs = [];
+var shedTemps = buildData(shedTemp_xs, shedTemp_ys, 'Shed', 'rgb(0, 0, 150)');
+var fridgeTemp_ys = [];
+var fridgeTemp_xs = [];
+var fridgeTemps = buildData(fridgeTemp_xs, fridgeTemp_ys, 'Fridge', 'rgb(0, 150, 0)');
+var wortTemp_ys = [];
+var wortTemp_xs = [];
+var wortTemps = buildData(wortTemp_xs, wortTemp_ys, 'Wort', 'rgb(0, 150, 150)');
 var temperature_ys = [];
 var temperature_xs = [];
-var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel', 'rgb(0, 0, 150)');
-var temperatureData = [temperatures];
-var temperatureLayout = getLayout('Temperature','&#176;Celsius');
+var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel', 'rgb(150, 0, 0)');
+var temperatureData = [shedTemps, fridgeTemps, wortTemps, temperatures];
+var temperatureLayout = getLayout('Temperature','&#176;Celsius', 10);
 Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
 
 function fetchTemperaturesJson(){
   fetch("/brewery/temperatures")
-  .then(function (response) {
-    return response.json();
-  })
+  .then(function (response) {return response.json();})
   .then(function (myJson) {
     refreshData(temperature_xs, temperature_ys,myJson.dateTime, myJson.temperature);
     Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
+  })
+  .catch(function (error) {console.log("Error: " + error);});
+
+  fetch("/brewery/ferment-temperatures")
+  .then(function (response) {return response.json();})
+  .then(function (myJson) {
+    refreshData(shedTemp_xs, shedTemp_ys, myJson.dateTime, myJson.shedTemps);
+    refreshData(fridgeTemp_xs, fridgeTemp_ys, myJson.dateTime, myJson.fridgeTemps);
+    refreshData(wortTemp_xs, wortTemp_ys, myJson.dateTime, myJson.wortTemps);
+    Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
     setTimeout(fetchTemperaturesJson, 5000);
   })
-  .catch(function (error) {
-    console.log("Error: " + error);
-  });
+  .catch(function (error) {console.log("Error: " + error);});
 }
 
 //************ Battery Graph **************
@@ -89,7 +111,7 @@ var battery_ys = [];
 var battery_xs = [];
 var battery = buildData(battery_xs, battery_ys, 'iSpindel Battery', 'rgb(0, 0, 150)');
 var batteryData = [battery];
-var batteryLayout = getLayout('iSpindel Battery', 'Volts');
+var batteryLayout = getLayout('iSpindel Battery', 'Volts', 10);
 Plotly.newPlot('batteryDiv', batteryData, batteryLayout);
 
 function fetchBatteryJson(){
@@ -115,7 +137,7 @@ var adjGravity_ys = [];
 var adjGravity_xs = [];
 var adjGravity = buildData(adjGravity_xs, adjGravity_ys, 'Adjusted Gravity', 'rgb(0, 100, 100)');
 var gravityData = [gravity, adjGravity];
-var gravityLayout = getLayout('Gravity', 'SG');
+var gravityLayout = getLayout('iSpindel Gravity', 'SG', 10);
 Plotly.newPlot('gravityDiv', gravityData, gravityLayout);
 
 function fetchGravityJson(){
@@ -134,11 +156,62 @@ function fetchGravityJson(){
   });
 }
 
+//************ Bubbles Graph **************
+var bubbles_ys = [];
+var bubbles_xs = [];
+var bubbles = buildData(bubbles_xs, bubbles_ys, 'Fermenter Bubbles', 'rgb(0, 0, 150)');
+var bubblesData = [bubbles];
+var bubblesLayout = getLayout('Fermenter Bubbles', 'Count', 10);
+Plotly.newPlot('bubblesDiv', bubblesData, bubblesLayout);
+
+function fetchBubblesJson(){
+  fetch("/brewery/ferment-bubbles")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    refreshData(bubbles_xs, bubbles_ys, myJson.dateTime, myJson.bubbles);
+    Plotly.update('bubblesDiv', bubblesData, bubblesLayout);
+    setTimeout(fetchBubblesJson, 5000);
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+  });
+}
+
+//************ Heating and Cooling Graph **************
+var heat_ys = [];
+var heat_xs = [];
+var heat = buildData(heat_xs, heat_ys, 'Heating', 'rgb(200, 0, 0)');
+var cool_ys = [];
+var cool_xs = [];
+var cool = buildData(cool_xs, cool_ys, 'Cooling', 'rgb(0, 0, 200)');
+var heatCoolsData = [heat, cool];
+var heatCoolsLayout = getLayout('Fermenter Heating & Cooling', 'On', 2);
+Plotly.newPlot('heatCoolsDiv', heatCoolsData, heatCoolsLayout);
+
+function fetchHeatCoolsJson(){
+  fetch("/brewery/ferment-heat-cools")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    refreshData(heat_xs, heat_ys, myJson.dateTime, myJson.heatings);
+    refreshData(cool_xs, cool_ys, myJson.dateTime, myJson.coolings);
+    Plotly.update('heatCoolsDiv', heatCoolsData, heatCoolsLayout);
+    setTimeout(fetchHeatCoolsJson, 5000);
+  })
+  .catch(function (error) {
+    console.log("Error: " + error);
+  });
+}
 
 // ******************* Initial load of graph data
 fetchTemperaturesJson();
 fetchBatteryJson();
 fetchGravityJson();
+fetchBubblesJson();
+fetchHeatCoolsJson();
 </script>
 </body>
 </html>
