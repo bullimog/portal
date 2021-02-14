@@ -51,6 +51,9 @@ public class IspindelControllerTests{
     @MockBean
     FermentBubblesFileConnector fermentBubblesFileConnector;
 
+    @MockBean
+    FermentConfigFileConnector fermentConfigFileConnector;
+
     private static ObjectMapper mapper = new ObjectMapper();
 
     @Test

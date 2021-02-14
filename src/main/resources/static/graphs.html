@@ -78,10 +78,13 @@ var fridgeTemps = buildData(fridgeTemp_xs, fridgeTemp_ys, 'Fridge', 'rgb(0, 150,
 var wortTemp_ys = [];
 var wortTemp_xs = [];
 var wortTemps = buildData(wortTemp_xs, wortTemp_ys, 'Wort', 'rgb(0, 150, 150)');
+var targetTemp_ys = [];
+var targetTemp_xs = [];
+var targetTemps = buildData(targetTemp_xs, targetTemp_ys, 'Target', 'rgb(0, 0, 0)');
 var temperature_ys = [];
 var temperature_xs = [];
 var temperatures = buildData(temperature_xs, temperature_ys, 'iSpindel', 'rgb(150, 0, 0)');
-var temperatureData = [shedTemps, fridgeTemps, wortTemps, temperatures];
+var temperatureData = [shedTemps, fridgeTemps, wortTemps, targetTemps, temperatures];
 var temperatureLayout = getLayout('Temperature','&#176;Celsius', 10);
 Plotly.newPlot('temperatureDiv', temperatureData, temperatureLayout);
 
@@ -100,6 +103,7 @@ function fetchTemperaturesJson(){
     refreshData(shedTemp_xs, shedTemp_ys, myJson.dateTime, myJson.shedTemps);
     refreshData(fridgeTemp_xs, fridgeTemp_ys, myJson.dateTime, myJson.fridgeTemps);
     refreshData(wortTemp_xs, wortTemp_ys, myJson.dateTime, myJson.wortTemps);
+    refreshData(targetTemp_xs, targetTemp_ys, myJson.dateTime, myJson.targetTemps);
     Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
     setTimeout(fetchTemperaturesJson, 5000);
   })

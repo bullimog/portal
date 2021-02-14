@@ -1,6 +1,7 @@
 package com.bullimog.portal.controllers;
 
 import com.bullimog.portal.connectors.FermentBubblesFileConnector;
+import com.bullimog.portal.connectors.FermentConfigFileConnector;
 import com.bullimog.portal.connectors.FermentHeatCoolFileConnector;
 import com.bullimog.portal.connectors.FermentTemperaturesFileConnector;
 import com.bullimog.portal.models.*;
@@ -23,6 +24,9 @@ public class FermenterController {
 
     @Autowired //using config.ControllerDependencies
     FermentBubblesFileConnector fbfc;
+
+    @Autowired //using config.ControllerDependencies
+    FermentConfigFileConnector fcfc;
 
     @GetMapping("/ferment-temperatures")
     public FermentTemperatures retrieveTemperatures() {
@@ -50,8 +54,10 @@ public class FermenterController {
         FermentTemperatures ft = ftfc.readFermentTemperatures();
         Double shedTemp = fmd.getShedTemp();
         Double fridgeTemp = fmd.getFridgeTemp();
-        Double wortTemp = fmd.getFridgeTemp();
-        ft.appendTemperature(shedTemp,fridgeTemp,wortTemp);
+        Double wortTemp = fmd.getWortTemp();
+        Double target = fmd.getTarget();
+        Double tolerance = fmd.getTolerance();
+        ft.appendTemperature(shedTemp,fridgeTemp,wortTemp, target, tolerance);
         boolean temperatureWritten = ftfc.writeFermentTemperatures(ft);
 
         FermentHeatCools fhc = fhcfc.readFermentHeatCools();
@@ -72,4 +78,12 @@ public class FermenterController {
             return new ResponseEntity<String>("Oops!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/ferment-config")
+    public FermentConfig retrieveConfig() {
+        ObjectMapper mapper = new ObjectMapper();
+        FermentConfig fc = fcfc.readConfig();
+        return fc;
+    }
+
 }

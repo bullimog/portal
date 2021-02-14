@@ -39,4 +39,9 @@ public class ControllerDependencies {
     public FermentBubblesFileConnector getFermentBubblesFileConnector(@Value("${fermentbubbles.filename}") String filename) {
         return new FermentBubblesFileConnectorImpl(filename);
     }
+
+    @Bean
+    public FermentConfigFileConnector getFermentConfigFileConnector(@Value("${fermentconfig.filename}") String filename) {
+        return new FermentConfigFileConnectorImpl(filename);
+    }
 }
