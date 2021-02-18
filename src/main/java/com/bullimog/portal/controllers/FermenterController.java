@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping(path="/brewery")
 
@@ -27,6 +29,12 @@ public class FermenterController {
 
     @Autowired //using config.ControllerDependencies
     FermentConfigFileConnector fcfc;
+
+    static FermentMeta fermentMeta = new FermentMeta();
+
+    FermenterController(){
+        fermentMeta.setLastGet(LocalDateTime.now());
+    }
 
     @GetMapping("/ferment-temperatures")
     public FermentTemperatures retrieveTemperatures() {
@@ -81,9 +89,16 @@ public class FermenterController {
 
     @GetMapping("/ferment-config")
     public FermentConfig retrieveConfig() {
+        fermentMeta.setLastGet(LocalDateTime.now());
         ObjectMapper mapper = new ObjectMapper();
         FermentConfig fc = fcfc.readConfig();
         return fc;
+    }
+
+    @GetMapping("/ferment-meta")
+    public FermentMeta retrieveMeta() {
+
+        return fermentMeta;
     }
 
 }

@@ -3,13 +3,47 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style> 
+    #currentDiv {
+        width: 1145px;
+        height: 25px;
+        border: 1px solid #c3c3c3;
+        padding-top: 4px;
+        display: flex;
+    }
+    #currentDiv div {
+        border-right: 30px solid white;
+    }
+    </style>
 </head>
 <body>
+<body>
+<div id="currentDiv">
+    <div style="background-color:lightgrey; font-weight: bold;">Temperatures:</div>
+    <div id="iSpindelTempDiv">iSpindel: 00.00</div>
+    <div id="wortDiv">Wort: 00.00</div>
+    <div id="fridgeDiv">Fridge: 00.00</div>
+    <div id="shedDiv">Shed: 00.00</div>
+    <div id="targetDiv">Target: 00.00</div>
+    <div id="toleranceDiv">Tolerance: 00.00</div>
+</div>
+<div id="currentDiv">
+    <div style="background-color:lightgrey; font-weight: bold;">Heating or Cooling?:</div>
+    <div id="heatcoolDiv">Neither</div>
+</div>
+<div id="currentDiv">
+    <div style="background-color:lightgrey; font-weight: bold;">Gravity:</div>
+    <div id="intGravityDiv">1.010</div>
+    <div id="calcGravityDiv">1.010</div>
+</div>
+<div id="messageDiv" style="background-color:red; font-weight: bold;"></div>
+<div id="lastGetDiv" style="background-color:red; font-weight: bold;"></div>
+<br/><br/>
 <div id="temperatureDiv" style="width:1250px;height:200px;"></div>
 <br/><br/>
 <div id="heatCoolsDiv" style="width:1250px;height:100px;"></div>
 <br/><br/>
-<div id="gravityDiv" style="width:1300px;height:200px;"></div>
+<div id="gravityDiv" style="width:1270px;height:200px;"></div>
 <br/><br/>
 <div id="bubblesDiv" style="width:1145px;height:200px;"></div>
 <br/><br/>
@@ -17,6 +51,13 @@
 
 <script>
 //************** Common **********
+var iSpindelTempsOk = true;
+var fermenterTempsOk = true;
+var batteryOk = true;
+var gravityOk = true;
+var bubblesOk = true;
+var heatCoolOk = true;
+
 function getLayout(aTitle, yAxisTitle, numOfTicks){
     var layout = {
         title:aTitle,
@@ -94,8 +135,13 @@ function fetchTemperaturesJson(){
   .then(function (myJson) {
     refreshData(temperature_xs, temperature_ys,myJson.dateTime, myJson.temperature);
     Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
+    document.getElementById("iSpindelTempDiv").innerHTML = "iSpindel: "+myJson.temperature[myJson.temperature.length-1] + "&#176;C";
+    iSpindelTempsOk=true;
   })
-  .catch(function (error) {console.log("Error: " + error);});
+  .catch(function (error) {
+    //console.log("Error: " + error);
+    iSpindelTempsOk=false;
+  });
 
   fetch("/brewery/ferment-temperatures")
   .then(function (response) {return response.json();})
@@ -105,9 +151,19 @@ function fetchTemperaturesJson(){
     refreshData(wortTemp_xs, wortTemp_ys, myJson.dateTime, myJson.wortTemps);
     refreshData(targetTemp_xs, targetTemp_ys, myJson.dateTime, myJson.targetTemps);
     Plotly.update('temperatureDiv', temperatureData, temperatureLayout);
-    setTimeout(fetchTemperaturesJson, 5000);
+
+    document.getElementById("wortDiv").innerHTML = "Wort: "+myJson.wortTemps[myJson.wortTemps.length-1] + "&#176;C";
+    document.getElementById("fridgeDiv").innerHTML = "Fridge: "+myJson.fridgeTemps[myJson.fridgeTemps.length-1] + "&#176;C";
+    document.getElementById("shedDiv").innerHTML = "Shed: "+myJson.shedTemps[myJson.shedTemps.length-1] + "&#176;C";
+    document.getElementById("targetDiv").innerHTML = "Target: "+myJson.targetTemps[myJson.targetTemps.length-1] + "&#176;C";
+    document.getElementById("toleranceDiv").innerHTML = "Tolerance: "+myJson.toleranceTemps[myJson.toleranceTemps.length-1] + "&#176;C";
+    fermenterTempsOk=true;
   })
-  .catch(function (error) {console.log("Error: " + error);});
+  .catch(function (error) {
+    //console.log("Error: " + error);
+    fermenterTempsOk=false;
+  });
+  setTimeout(fetchTemperaturesJson, 5000);
 }
 
 //************ Battery Graph **************
@@ -126,20 +182,22 @@ function fetchBatteryJson(){
   .then(function (myJson) {
     refreshData(battery_xs, battery_ys,myJson.dateTime, myJson.batteries);
     Plotly.update('batteryDiv', batteryData, batteryLayout);
-    setTimeout(fetchBatteryJson, 5000);
+    batteryOk=true;
   })
   .catch(function (error) {
-    console.log("Error: " + error);
+    //console.log("Error: " + error);
+    batteryOk=false;
   });
+  setTimeout(fetchBatteryJson, 5000);
 }
 
 //************ Gravity Graph **************
 var gravity_ys = [];
 var gravity_xs = [];
-var gravity = buildData(gravity_xs, gravity_ys, 'Gravity', 'rgb(0, 0, 150)');
+var gravity = buildData(gravity_xs, gravity_ys, 'Internal', 'rgb(0, 0, 150)');
 var adjGravity_ys = [];
 var adjGravity_xs = [];
-var adjGravity = buildData(adjGravity_xs, adjGravity_ys, 'Adjusted Gravity', 'rgb(0, 100, 100)');
+var adjGravity = buildData(adjGravity_xs, adjGravity_ys, 'Calculated', 'rgb(0, 100, 100)');
 var gravityData = [gravity, adjGravity];
 var gravityLayout = getLayout('iSpindel Gravity', 'SG', 10);
 Plotly.newPlot('gravityDiv', gravityData, gravityLayout);
@@ -153,11 +211,15 @@ function fetchGravityJson(){
     refreshData(gravity_xs, gravity_ys, myJson.dateTime, myJson.gravities);
     refreshData(adjGravity_xs, adjGravity_ys, myJson.dateTime, myJson.adjustedGravities);
     Plotly.update('gravityDiv', gravityData, gravityLayout);
-    setTimeout(fetchGravityJson, 5000);
+    document.getElementById("intGravityDiv").innerHTML = "Internal Gravity: "+myJson.gravities[myJson.gravities.length-1];
+    document.getElementById("calcGravityDiv").innerHTML = "Calculated Gravity: "+myJson.adjustedGravities[myJson.adjustedGravities.length-1];
+    gravityOk=true;
   })
   .catch(function (error) {
-    console.log("Error: " + error);
+    //console.log("Error: " + error);
+    gravityOk=false;
   });
+  setTimeout(fetchGravityJson, 5000);
 }
 
 //************ Bubbles Graph **************
@@ -176,11 +238,13 @@ function fetchBubblesJson(){
   .then(function (myJson) {
     refreshData(bubbles_xs, bubbles_ys, myJson.dateTime, myJson.bubbles);
     Plotly.update('bubblesDiv', bubblesData, bubblesLayout);
-    setTimeout(fetchBubblesJson, 5000);
+    bubblesOk=true;
   })
   .catch(function (error) {
-    console.log("Error: " + error);
+    //console.log("Error: " + error);
+    bubblesOk=false;
   });
+  setTimeout(fetchBubblesJson, 5000);
 }
 
 //************ Heating and Cooling Graph **************
@@ -203,11 +267,58 @@ function fetchHeatCoolsJson(){
     refreshData(heat_xs, heat_ys, myJson.dateTime, myJson.heatings);
     refreshData(cool_xs, cool_ys, myJson.dateTime, myJson.coolings);
     Plotly.update('heatCoolsDiv', heatCoolsData, heatCoolsLayout);
-    setTimeout(fetchHeatCoolsJson, 5000);
+    var heatcool = "Neither";
+    if(myJson.heatings[myJson.heatings.length-1]>0) heatcool = "Heating";
+    if(myJson.coolings[myJson.coolings.length-1]>0) heatcool = "Cooling";
+    if( (myJson.coolings[myJson.coolings.length-1]>0) && (myJson.heatings[myJson.heatings.length-1]>0) ) heatcool = "Heating & Cooling";
+    document.getElementById("heatcoolDiv").innerHTML = heatcool;
+    heatCoolOk=true;
   })
   .catch(function (error) {
     console.log("Error: " + error);
+    heatCoolOk=false;
   });
+  setTimeout(fetchHeatCoolsJson, 5000);
+}
+
+function checkNetwork(){
+  var message = "";
+  if (!iSpindelTempsOk || !fermenterTempsOk || !batteryOk || !gravityOk || !bubblesOk || !heatCoolOk){
+    message = "Network error fetching: ";
+  }
+
+  if(!iSpindelTempsOk){message += "iSpindel temperatures, ";}
+  if(!fermenterTempsOk){message += "fermenter temperatures, ";}
+  if(!batteryOk){message += "battery, ";}
+  if(!gravityOk){message += "gravity, ";}
+  if(!bubblesOk){message += "bubbles, ";}
+  if(!heatCoolOk){message += "Heating & cooling, ";}
+  document.getElementById("messageDiv").innerHTML = message;
+  setTimeout(checkNetwork, 5000);
+}
+
+function fetchFermentMeta(){
+  fetch("/brewery/ferment-meta")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    var last = new Date(myJson.lastGet);
+    var now = new Date();
+    var second = 1000;
+    var minute = 60000;
+    var sDiff = Math.ceil((now.getTime()-last.getTime())/(second));
+    if((sDiff > 35) && (sDiff < 9999999)){
+        document.getElementById("lastGetDiv").innerHTML = "" + sDiff + " seconds since Fermenter fetched config";
+    }else{
+        document.getElementById("lastGetDiv").innerHTML = "";
+    }
+  })
+  .catch(function (error) {
+    //console.log("Error: " + error);
+    document.getElementById("lastGetDiv").innerHTML = "Network error fetching Fermenter config status";
+  });
+  setTimeout(fetchFermentMeta, 5000);
 }
 
 // ******************* Initial load of graph data
@@ -216,6 +327,8 @@ fetchBatteryJson();
 fetchGravityJson();
 fetchBubblesJson();
 fetchHeatCoolsJson();
+checkNetwork();
+fetchFermentMeta();
 </script>
 </body>
 </html>
