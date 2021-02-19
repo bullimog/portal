@@ -23,7 +23,8 @@ public class BatteryFileConnectorImpl implements BatteryFileConnector {
         try {
             b = mapper.readValue(Paths.get(filename).toFile(), Batteries.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Batteries" + ex);
+            writeBatteries(b);
+            System.out.println("Batteries file missing, created an empty one" + ex);
         }
         return b;
     }

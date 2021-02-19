@@ -23,7 +23,8 @@ public class TemperatureFileConnectorImpl implements TemperatureFileConnector{
         try {
             t = mapper.readValue(Paths.get(filename).toFile(), Temperatures.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Temperatures" + ex);
+            writeTemperatures(t);
+            System.out.println("iSpindel Temperatures file missing, created an empty one " + ex);
         }
         return t;
     }

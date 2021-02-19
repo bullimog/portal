@@ -25,7 +25,8 @@ public class GravityFileConnectorImpl implements GravityFileConnector{
         try {
             g = mapper.readValue(Paths.get(filename).toFile(), Gravities.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Gravities" + ex);
+            writeGravities(g);
+            System.out.println("iSpindel Gravity file missing, created an empty one " + ex);
         }
         return g;
     }

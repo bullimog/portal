@@ -24,7 +24,8 @@ public class FermentHeatCoolFileConnectorImpl implements FermentHeatCoolFileConn
         try {
             fhc = mapper.readValue(Paths.get(filename).toFile(), FermentHeatCools.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Fermenter Heat Cool file" + ex);
+            writeFermentHeatCools(fhc);
+            System.out.println("Fermenter Heat Cool file missing, created an empty one " + ex);
         }
         return fhc;
     };

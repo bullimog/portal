@@ -24,7 +24,8 @@ public class FermentTemperaturesFileConnectorImpl implements FermentTemperatures
         try {
             ft = mapper.readValue(Paths.get(filename).toFile(), FermentTemperatures.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Temperatures" + ex);
+            writeFermentTemperatures(ft);
+            System.out.println("Ferment Temperatures file missing, created an empty one " + ex);
         }
         return ft;
     }

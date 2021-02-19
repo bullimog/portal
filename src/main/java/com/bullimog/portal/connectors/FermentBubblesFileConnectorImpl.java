@@ -24,7 +24,8 @@ public class FermentBubblesFileConnectorImpl implements FermentBubblesFileConnec
         try {
             fb = mapper.readValue(Paths.get(filename).toFile(), FermentBubbles.class);
         }catch(IOException ex){
-            System.out.println("Exception when reading Fermenter Bubbles file" + ex);
+            writeFermentBubbles(fb);
+            System.out.println("Fermenter Bubbles file missing, created an empty one " + ex);
         }
         return fb;
     };
