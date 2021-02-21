@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Configure Fermenter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
          .error {
@@ -12,6 +12,7 @@
     </style>
 </head>
 <body>
+<h1>Configure Fermenter</h1>
 <form action="#" th:action="@{/fermenter-config}" th:object="${fermentConfig}" method="post">
     <table>
         <tr>
@@ -50,7 +51,7 @@
             <td th:if="${#fields.hasErrors('shedCalibrate')}" th:errors="*{shedCalibrate}">shedCalibrate Error</td>
         </tr>
         <tr>
-            <td><button type="submit">Submit</button></td>
+            <td><button type="submit">Submit</button> <a href="graphs.html">Cancel</a></td>
         </tr>
     </table>
 </form>

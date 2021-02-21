@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Show message</title>
+    <title>Configure iSpindel</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -12,6 +12,7 @@
     </style>
 </head>
 <body>
+<h1>Configure iSpindel</h1>
 <form action="#" th:action="@{/ispindel-config}" th:object="${calibration}" method="post">
     <table>
         <tr>
@@ -40,7 +41,7 @@
             <td th:if="${#fields.hasErrors('calibratedTemperatureFahrenheit')}" th:errors="*{calibratedTemperatureFahrenheit}">calibratedTemperatureFahrenheit Error</td>
         </tr>
         <tr>
-            <td><button type="submit">Submit</button></td>
+            <td><button type="submit">Submit</button> <a href="graphs.html">Cancel</a></td>
         </tr>
     </table>
 </form>
