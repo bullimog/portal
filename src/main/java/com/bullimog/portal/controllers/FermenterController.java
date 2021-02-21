@@ -97,7 +97,6 @@ public class FermenterController {
 
     @GetMapping("/ferment-meta")
     public FermentMeta retrieveMeta() {
-
         return fermentMeta;
     }
 

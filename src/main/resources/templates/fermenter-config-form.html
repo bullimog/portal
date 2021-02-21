@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+         .error {
+            color: red;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<form action="#" th:action="@{/fermenter-config}" th:object="${fermentConfig}" method="post">
+    <table>
+        <tr>
+            <td>Update URL:</td>
+            <td><input type="text" th:field="*{updateUrl}" size="60"/></td>
+            <td th:if="${#fields.hasErrors('updateUrl')}" th:errors="*{updateUrl}">updateUrl Error</td>
+        </tr>
+        <tr>
+            <td>Target Temperature:</td>
+            <td><input type="text" th:field="*{target}" /></td>
+            <td th:if="${#fields.hasErrors('target')}" th:errors="*{target}">target Error</td>
+        </tr>
+        <tr>
+            <td>Tolerance:</td>
+            <td><input type="text" th:field="*{tolerance}" /></td>
+            <td th:if="${#fields.hasErrors('tolerance')}" th:errors="*{tolerance}">tolerance Error</td>
+        </tr>
+        <tr>
+            <td>History Duration:</td>
+            <td><input type="text" th:field="*{historyDuration}" /></td>
+            <td th:if="${#fields.hasErrors('historyDuration')}" th:errors="*{historyDuration}">historyDuration Error</td>
+        </tr>
+        <tr>
+            <td>Calibrate Wort Temperature:</td>
+            <td><input type="text" th:field="*{wortCalibrate}" /></td>
+            <td th:if="${#fields.hasErrors('wortCalibrate')}" th:errors="*{wortCalibrate}">wortCalibrate Error</td>
+        </tr>
+        <tr>
+            <td>Calibrate Fridge Temperature:</td>
+            <td><input type="text" th:field="*{fridgeCalibrate}" /></td>
+            <td th:if="${#fields.hasErrors('fridgeCalibrate')}" th:errors="*{fridgeCalibrate}">fridgeCalibrate Error</td>
+        </tr>
+        <tr>
+            <td>Calibrate Shed Temperature:</td>
+            <td><input type="text" th:field="*{shedCalibrate}" /></td>
+            <td th:if="${#fields.hasErrors('shedCalibrate')}" th:errors="*{shedCalibrate}">shedCalibrate Error</td>
+        </tr>
+        <tr>
+            <td><button type="submit">Submit</button></td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

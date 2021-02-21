@@ -1,10 +1,1 @@
-{
-    "updateUrl":"http://redback:8080/brewery/ferment-monitor",
-    "target":21.0,
-    "tolerance":0.5,
-    "historyDuration":30000,
-    "wortCalibrate": -0.2,
-    "fridgeCalibrate": -0.3,
-    "shedCalibrate": -0.2
-}
-
+{"updateUrl":"http://redback:8080/brewery/ferment-monitor","target":18.0,"tolerance":0.5,"historyDuration":30000,"wortCalibrate":-0.2,"fridgeCalibrate":-0.3,"shedCalibrate":-0.2}
