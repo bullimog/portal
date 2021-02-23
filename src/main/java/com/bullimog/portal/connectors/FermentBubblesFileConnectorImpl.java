@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -23,9 +24,11 @@ public class FermentBubblesFileConnectorImpl implements FermentBubblesFileConnec
         FermentBubbles fb = new FermentBubbles(); //default to empty
         try {
             fb = mapper.readValue(Paths.get(filename).toFile(), FermentBubbles.class);
-        }catch(IOException ex){
+        }catch(FileNotFoundException ex){
             writeFermentBubbles(fb);
             System.out.println("Fermenter Bubbles file missing, created an empty one " + ex);
+        }catch(IOException ex){
+            System.out.println("Fermenter Bubbles IOException: " + ex);
         }
         return fb;
     };

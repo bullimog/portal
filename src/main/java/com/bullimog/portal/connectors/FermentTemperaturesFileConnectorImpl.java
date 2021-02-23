@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -23,9 +24,11 @@ public class FermentTemperaturesFileConnectorImpl implements FermentTemperatures
         FermentTemperatures ft = new FermentTemperatures(); //default to empty
         try {
             ft = mapper.readValue(Paths.get(filename).toFile(), FermentTemperatures.class);
-        }catch(IOException ex){
+        }catch(FileNotFoundException ex){
             writeFermentTemperatures(ft);
             System.out.println("Ferment Temperatures file missing, created an empty one " + ex);
+        }catch(IOException ex){
+            System.out.println("Ferment Temperatures IOException " + ex);
         }
         return ft;
     }

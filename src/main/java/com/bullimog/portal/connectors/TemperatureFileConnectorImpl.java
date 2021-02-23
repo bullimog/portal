@@ -4,6 +4,8 @@ import com.bullimog.portal.models.Temperatures;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.io.IOException;
 
@@ -22,9 +24,11 @@ public class TemperatureFileConnectorImpl implements TemperatureFileConnector{
         Temperatures t = new Temperatures(); //default to empty
         try {
             t = mapper.readValue(Paths.get(filename).toFile(), Temperatures.class);
-        }catch(IOException ex){
+        }catch(FileNotFoundException ex){
             writeTemperatures(t);
             System.out.println("iSpindel Temperatures file missing, created an empty one " + ex);
+        }catch(IOException ex){
+            System.out.println("iSpindel Temperatures IOException: " + ex);
         }
         return t;
     }

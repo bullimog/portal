@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -23,9 +24,11 @@ public class FermentHeatCoolFileConnectorImpl implements FermentHeatCoolFileConn
         FermentHeatCools fhc = new FermentHeatCools(); //default to empty
         try {
             fhc = mapper.readValue(Paths.get(filename).toFile(), FermentHeatCools.class);
-        }catch(IOException ex){
+        }catch(FileNotFoundException ex){
             writeFermentHeatCools(fhc);
             System.out.println("Fermenter Heat Cool file missing, created an empty one " + ex);
+        }catch(IOException ex){
+            System.out.println("Fermenter Heat Cool IOException: " + ex);
         }
         return fhc;
     };

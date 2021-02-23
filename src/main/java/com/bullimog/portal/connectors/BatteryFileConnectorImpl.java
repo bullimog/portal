@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class BatteryFileConnectorImpl implements BatteryFileConnector {
     private String filename;
@@ -22,9 +23,12 @@ public class BatteryFileConnectorImpl implements BatteryFileConnector {
         Batteries b = new Batteries(); //default to empty
         try {
             b = mapper.readValue(Paths.get(filename).toFile(), Batteries.class);
-        }catch(IOException ex){
+        }catch(FileNotFoundException ex){
             writeBatteries(b);
             System.out.println("Batteries file missing, created an empty one" + ex);
+        }
+        catch(IOException ex){
+            System.out.println("Exception while readingBatteries: " + ex);
         }
         return b;
     }
