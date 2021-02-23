@@ -4,16 +4,15 @@ import com.bullimog.portal.connectors.BatteryFileConnector;
 import com.bullimog.portal.connectors.CalibrationFileConnector;
 import com.bullimog.portal.connectors.GravityFileConnector;
 import com.bullimog.portal.connectors.TemperatureFileConnector;
-import com.bullimog.portal.models.Batteries;
-import com.bullimog.portal.models.Gravities;
-import com.bullimog.portal.models.ISpindelData;
+import com.bullimog.portal.models.*;
 import com.bullimog.portal.util.GravityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.bullimog.portal.models.Temperatures;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(path="/brewery")
@@ -30,6 +29,12 @@ public class IspindelController {
 
     @Autowired //using config.ControllerDependencies
     CalibrationFileConnector cfc;
+
+    static ISpindelMeta iSpindelMeta = new ISpindelMeta();
+
+    IspindelController(){
+        iSpindelMeta.setLastPost(LocalDateTime.now());
+    }
 
     @RequestMapping(value = "/ispindel", method = RequestMethod.POST)
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
@@ -51,6 +56,7 @@ public class IspindelController {
         boolean gravityWritten = gfc.writeGravities(g);
 
         if (temperatureWritten && batteryWritten && gravityWritten) {
+            iSpindelMeta.setLastPost(LocalDateTime.now());
             return new ResponseEntity<String>("Done it!", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<String>("Oops!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,5 +82,10 @@ public class IspindelController {
         ObjectMapper mapper = new ObjectMapper();
         Gravities g = gfc.readGravities();
         return g;
+    }
+
+    @GetMapping("/ispindel-meta")
+    public ISpindelMeta retrieveMeta() {
+        return iSpindelMeta;
     }
 }

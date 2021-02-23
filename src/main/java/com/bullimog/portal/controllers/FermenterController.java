@@ -34,6 +34,7 @@ public class FermenterController {
 
     FermenterController(){
         fermentMeta.setLastGet(LocalDateTime.now());
+        fermentMeta.setLastPost(LocalDateTime.now());
     }
 
     @GetMapping("/ferment-temperatures")
@@ -81,6 +82,7 @@ public class FermenterController {
 
 
         if (temperatureWritten && heatCoolWritten && bubblesWritten) {
+            fermentMeta.setLastPost(LocalDateTime.now());
             return new ResponseEntity<String>("Done it!", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<String>("Oops!", HttpStatus.INTERNAL_SERVER_ERROR);

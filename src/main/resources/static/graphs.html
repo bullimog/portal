@@ -36,6 +36,11 @@
     <div id="intGravityDiv">1.010</div>
     <div id="calcGravityDiv">1.010</div>
 </div>
+<div id="currentDiv">
+    <div style="background-color:lightgrey; font-weight: bold;">Last Data Post:</div>
+    <div id="iSpindelPostDiv">?????</div>
+    <div id="fermenterPostDiv">?????</div>
+</div>
 <div id="messageDiv" style="background-color:red; font-weight: bold;"></div>
 <div id="lastGetDiv" style="background-color:red; font-weight: bold;"></div>
 <br/><br/>
@@ -48,6 +53,7 @@
 <div id="bubblesDiv" style="width:1145px;height:200px;"></div>
 <br/><br/>
 <div id="batteryDiv" style="width:1145px;height:200px;"></div>
+<br/><br>
 <div id="linksDiv">
     <a href="../fermenter-config">Configure Fermenter</a> &nbsp; &nbsp; &nbsp; &nbsp;
     <a href="../ispindel-config">Configure iSpindel</a>
@@ -316,12 +322,36 @@ function fetchFermentMeta(){
     }else{
         document.getElementById("lastGetDiv").innerHTML = "";
     }
+    var lastPost = new Date(myJson.lastPost);
+    var hh = ("0" + lastPost.getHours()).slice(-2);
+    var mm = ("0" + lastPost.getMinutes()).slice(-2);
+    var ss = ("0" + lastPost.getSeconds()).slice(-2);
+    document.getElementById("fermenterPostDiv").innerHTML = "Fermenter: "+hh+":"+mm+":"+ss;
   })
   .catch(function (error) {
     //console.log("Error: " + error);
     document.getElementById("lastGetDiv").innerHTML = "Network error fetching Fermenter config status";
   });
   setTimeout(fetchFermentMeta, 5000);
+}
+
+function fetchISpindelMeta(){
+  fetch("/brewery/ispindel-meta")
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (myJson) {
+    var lastPost = new Date(myJson.lastPost);
+    var hh = ("0" + lastPost.getHours()).slice(-2);
+    var mm = ("0" + lastPost.getMinutes()).slice(-2);
+    var ss = ("0" + lastPost.getSeconds()).slice(-2);
+    document.getElementById("iSpindelPostDiv").innerHTML = "iSpindel: " + hh+":"+mm+":"+ss;
+  })
+  .catch(function (error) {
+    //console.log("Error: " + error);
+    document.getElementById("lastGetDiv").innerHTML = "Network error fetching iSpindel status";
+  });
+  setTimeout(fetchISpindelMeta, 5000);
 }
 
 // ******************* Initial load of graph data
@@ -332,6 +362,7 @@ fetchBubblesJson();
 fetchHeatCoolsJson();
 checkNetwork();
 fetchFermentMeta();
+fetchISpindelMeta();
 </script>
 </body>
 </html>
