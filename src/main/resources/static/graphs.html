@@ -35,6 +35,7 @@
     <div style="background-color:lightgrey; font-weight: bold;">Gravity:</div>
     <div id="intGravityDiv">1.010</div>
     <div id="calcGravityDiv">1.010</div>
+    <div id="lowGravityDiv">1.010</div>
 </div>
 <div id="currentDiv">
     <div style="background-color:lightgrey; font-weight: bold;">Last Data Post:</div>
@@ -207,9 +208,30 @@ var gravity = buildData(gravity_xs, gravity_ys, 'Internal', 'rgb(0, 0, 150)');
 var adjGravity_ys = [];
 var adjGravity_xs = [];
 var adjGravity = buildData(adjGravity_xs, adjGravity_ys, 'Calculated', 'rgb(0, 100, 100)');
-var gravityData = [gravity, adjGravity];
+var lowGravity_ys = [];
+var lowGravity_xs = [];
+var lowGravity = buildData(lowGravity_xs, lowGravity_ys, 'Lowest', 'rgb(100, 100, 100)');
+var gravityData = [gravity, adjGravity, lowGravity];
 var gravityLayout = getLayout('iSpindel Gravity', 'SG', 10);
 Plotly.newPlot('gravityDiv', gravityData, gravityLayout);
+
+
+
+//Constrain values to only reduce
+function reduceOnlyValues(gravities){
+   var aGravities = [];
+   if(gravities.length>0){
+      aGravities.push(gravities[0]);
+      for(var n=1; n<gravities.length; n++){
+         if(gravities[n] < aGravities[n-1]){
+           aGravities.push(gravities[n]);
+         }else{
+            aGravities.push(aGravities[n-1]);
+         }
+      }
+   }
+   return aGravities;
+}
 
 function fetchGravityJson(){
   fetch("/brewery/gravities")
@@ -217,15 +239,19 @@ function fetchGravityJson(){
     return response.json();
   })
   .then(function (myJson) {
+
     refreshData(gravity_xs, gravity_ys, myJson.dateTime, myJson.gravities);
     refreshData(adjGravity_xs, adjGravity_ys, myJson.dateTime, myJson.adjustedGravities);
+    var lowGravities = reduceOnlyValues(myJson.adjustedGravities);
+    refreshData(lowGravity_xs, lowGravity_ys, myJson.dateTime, lowGravities);
     Plotly.update('gravityDiv', gravityData, gravityLayout);
     document.getElementById("intGravityDiv").innerHTML = "Internal Gravity: "+myJson.gravities[myJson.gravities.length-1];
     document.getElementById("calcGravityDiv").innerHTML = "Calculated Gravity: "+myJson.adjustedGravities[myJson.adjustedGravities.length-1];
+    document.getElementById("lowGravityDiv").innerHTML = "Lowest Gravity: "+lowGravities[lowGravities.length-1];
     gravityOk=true;
   })
   .catch(function (error) {
-    //console.log("Error: " + error);
+    console.log("Error: " + error);
     gravityOk=false;
   });
   setTimeout(fetchGravityJson, 5000);
