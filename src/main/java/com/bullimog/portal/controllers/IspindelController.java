@@ -57,6 +57,7 @@ public class IspindelController {
 
         if (temperatureWritten && batteryWritten && gravityWritten) {
             iSpindelMeta.setLastPost(LocalDateTime.now());
+            iSpindelMeta.setAngle(isd.getAngle());
             return new ResponseEntity<String>("Done it!", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<String>("Oops!", HttpStatus.INTERNAL_SERVER_ERROR);

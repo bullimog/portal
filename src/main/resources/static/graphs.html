@@ -36,6 +36,7 @@
     <div id="intGravityDiv">1.010</div>
     <div id="calcGravityDiv">1.010</div>
     <div id="lowGravityDiv">1.010</div>
+    <div id="angleDiv">1.010</div>
 </div>
 <div id="currentDiv">
     <div style="background-color:lightgrey; font-weight: bold;">Last Data Post:</div>
@@ -372,6 +373,7 @@ function fetchISpindelMeta(){
     var mm = ("0" + lastPost.getMinutes()).slice(-2);
     var ss = ("0" + lastPost.getSeconds()).slice(-2);
     document.getElementById("iSpindelPostDiv").innerHTML = "iSpindel: " + hh+":"+mm+":"+ss;
+    document.getElementById("angleDiv").innerHTML = "Angle: " +myJson.angle ;
   })
   .catch(function (error) {
     //console.log("Error: " + error);
