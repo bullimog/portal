@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 //Defines Beans, which will be found and autowired.
+//Configuration values defined in resources/application.properties
 @Configuration
 public class ControllerDependencies {
 

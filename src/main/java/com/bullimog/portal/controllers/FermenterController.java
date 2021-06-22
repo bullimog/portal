@@ -19,16 +19,16 @@ import java.time.LocalDateTime;
 public class FermenterController {
 
     @Autowired //using config.ControllerDependencies
-    FermentTemperaturesFileConnector ftfc;
+    FermentTemperaturesFileConnector fermentTemperaturesFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    FermentHeatCoolFileConnector fhcfc;
+    FermentHeatCoolFileConnector fermentHeatCoolFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    FermentBubblesFileConnector fbfc;
+    FermentBubblesFileConnector fermentBubblesFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    FermentConfigFileConnector fcfc;
+    FermentConfigFileConnector fermentConfigFileConnector;
 
     static FermentMeta fermentMeta = new FermentMeta();
 
@@ -40,45 +40,42 @@ public class FermenterController {
     @GetMapping("/ferment-temperatures")
     public FermentTemperatures retrieveTemperatures() {
         ObjectMapper mapper = new ObjectMapper();
-        FermentTemperatures ft = ftfc.readFermentTemperatures();
-        return ft;
+        return fermentTemperaturesFileConnector.readFermentTemperatures();
     }
 
     @GetMapping("/ferment-heat-cools")
     public FermentHeatCools retrieveHeatCools() {
         ObjectMapper mapper = new ObjectMapper();
-        FermentHeatCools fhc = fhcfc.readFermentHeatCools();
-        return fhc;
+        return fermentHeatCoolFileConnector.readFermentHeatCools();
     }
 
     @GetMapping("/ferment-bubbles")
     public FermentBubbles retrieveBubbles() {
         ObjectMapper mapper = new ObjectMapper();
-        FermentBubbles fb = fbfc.readFermentBubbles();
-        return fb;
+        return fermentBubblesFileConnector.readFermentBubbles();
     }
 
     @PostMapping(value = "/ferment-monitor")
     public ResponseEntity<String> receiveData(@RequestBody FermentMonitorData fmd) {
-        FermentTemperatures ft = ftfc.readFermentTemperatures();
+        FermentTemperatures ft = fermentTemperaturesFileConnector.readFermentTemperatures();
         Double shedTemp = fmd.getShedTemp();
         Double fridgeTemp = fmd.getFridgeTemp();
         Double wortTemp = fmd.getWortTemp();
         Double target = fmd.getTarget();
         Double tolerance = fmd.getTolerance();
         ft.appendTemperature(shedTemp,fridgeTemp,wortTemp, target, tolerance);
-        boolean temperatureWritten = ftfc.writeFermentTemperatures(ft);
+        boolean temperatureWritten = fermentTemperaturesFileConnector.writeFermentTemperatures(ft);
 
-        FermentHeatCools fhc = fhcfc.readFermentHeatCools();
+        FermentHeatCools fhc = fermentHeatCoolFileConnector.readFermentHeatCools();
         Integer heating = fmd.getHeating();
         Integer cooling = fmd.getCooling();
         fhc.appendFermentHeatCool(cooling, heating);
-        boolean heatCoolWritten = fhcfc.writeFermentHeatCools(fhc);
+        boolean heatCoolWritten = fermentHeatCoolFileConnector.writeFermentHeatCools(fhc);
 
-        FermentBubbles fb = fbfc.readFermentBubbles();
+        FermentBubbles fb = fermentBubblesFileConnector.readFermentBubbles();
         Integer bubbles = fmd.getBubbles();
         fb.appendFermentBubbles(bubbles);
-        boolean bubblesWritten = fbfc.writeFermentBubbles(fb);
+        boolean bubblesWritten = fermentBubblesFileConnector.writeFermentBubbles(fb);
 
 
         if (temperatureWritten && heatCoolWritten && bubblesWritten) {
@@ -93,8 +90,7 @@ public class FermenterController {
     public FermentConfig retrieveConfig() {
         fermentMeta.setLastGet(LocalDateTime.now());
         ObjectMapper mapper = new ObjectMapper();
-        FermentConfig fc = fcfc.readConfig();
-        return fc;
+        return fermentConfigFileConnector.readConfig();
     }
 
     @GetMapping("/ferment-meta")

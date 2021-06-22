@@ -19,16 +19,16 @@ import java.time.LocalDateTime;
 public class IspindelController {
 
     @Autowired //using config.ControllerDependencies
-    TemperatureFileConnector tfc;
+    TemperatureFileConnector temperatureFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    BatteryFileConnector bfc;
+    BatteryFileConnector batteryFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    GravityFileConnector gfc;
+    GravityFileConnector gravityFileConnector;
 
     @Autowired //using config.ControllerDependencies
-    CalibrationFileConnector cfc;
+    CalibrationFileConnector calibrationFileConnector;
 
     static ISpindelMeta iSpindelMeta = new ISpindelMeta();
 
@@ -38,22 +38,22 @@ public class IspindelController {
 
     @RequestMapping(value = "/ispindel", method = RequestMethod.POST)
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
-        GravityUtils gu = new GravityUtils(cfc.readCalibration());
-        Temperatures t = tfc.readTemperatures();
+        GravityUtils gu = new GravityUtils(calibrationFileConnector.readCalibration());
+        Temperatures t = temperatureFileConnector.readTemperatures();
         Double temperature = isd.getTemperature();
         t.appendTemperature(temperature);
-        boolean temperatureWritten = tfc.writeTemperatures(t);
+        boolean temperatureWritten = temperatureFileConnector.writeTemperatures(t);
 
-        Batteries b = bfc.readBatteries();
+        Batteries b = batteryFileConnector.readBatteries();
         b.appendBattery(isd.getBattery());
-        boolean batteryWritten = bfc.writeBatteries(b);
+        boolean batteryWritten = batteryFileConnector.writeBatteries(b);
 
-        Gravities g = gfc.readGravities();
+        Gravities g = gravityFileConnector.readGravities();
         Double tilt = isd.getAngle();
         Double calculatedGravity = gu.calculateGravity(tilt);
         Double adjustedGravity = gu.adjustGravityForTemperatureC(calculatedGravity, temperature);
         g.appendGravity(isd.getGravity(), adjustedGravity);
-        boolean gravityWritten = gfc.writeGravities(g);
+        boolean gravityWritten = gravityFileConnector.writeGravities(g);
 
         if (temperatureWritten && batteryWritten && gravityWritten) {
             iSpindelMeta.setLastPost(LocalDateTime.now());
@@ -67,22 +67,19 @@ public class IspindelController {
     @GetMapping("/temperatures")
     public Temperatures retrieveTemperatures() {
         ObjectMapper mapper = new ObjectMapper();
-        Temperatures t = tfc.readTemperatures();
-        return t;
+        return temperatureFileConnector.readTemperatures();
     }
 
     @GetMapping("/batteries")
     public Batteries retrieveBatteries() {
         ObjectMapper mapper = new ObjectMapper();
-        Batteries b = bfc.readBatteries();
-        return b;
+        return batteryFileConnector.readBatteries();
     }
 
     @GetMapping("/gravities")
     public Gravities retrieveGravities() {
         ObjectMapper mapper = new ObjectMapper();
-        Gravities g = gfc.readGravities();
-        return g;
+        return gravityFileConnector.readGravities();
     }
 
     @GetMapping("/ispindel-meta")
