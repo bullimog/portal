@@ -1,9 +1,6 @@
 package com.bullimog.portal.controllers;
 
-import com.bullimog.portal.connectors.BatteryFileConnector;
-import com.bullimog.portal.connectors.CalibrationFileConnector;
-import com.bullimog.portal.connectors.GravityFileConnector;
-import com.bullimog.portal.connectors.TemperatureFileConnector;
+import com.bullimog.portal.connectors.*;
 import com.bullimog.portal.models.*;
 import com.bullimog.portal.util.GravityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +41,17 @@ public class IspindelController {
         t.appendTemperature(temperature);
         boolean temperatureWritten = temperatureFileConnector.writeTemperatures(t);
 
-        Batteries b = batteryFileConnector.readBatteries();
+        Batteries b = batteryFileConnector.readContents(Batteries.class);
+        if(b==null){ b = new Batteries(); }
         b.appendBattery(isd.getBattery());
-        boolean batteryWritten = batteryFileConnector.writeBatteries(b);
+        boolean batteryWritten = batteryFileConnector.writeContents(b);
 
-        Gravities g = gravityFileConnector.readGravities();
+        Gravities g = gravityFileConnector.readContents(Gravities.class);
         Double tilt = isd.getAngle();
         Double calculatedGravity = gu.calculateGravity(tilt);
         Double adjustedGravity = gu.adjustGravityForTemperatureC(calculatedGravity, temperature);
         g.appendGravity(isd.getGravity(), adjustedGravity);
-        boolean gravityWritten = gravityFileConnector.writeGravities(g);
+        boolean gravityWritten = gravityFileConnector.writeContents(g);
 
         if (temperatureWritten && batteryWritten && gravityWritten) {
             iSpindelMeta.setLastPost(LocalDateTime.now());
@@ -73,13 +71,14 @@ public class IspindelController {
     @GetMapping("/batteries")
     public Batteries retrieveBatteries() {
         ObjectMapper mapper = new ObjectMapper();
-        return batteryFileConnector.readBatteries();
+        //Batteries b = new Batteries();
+        return batteryFileConnector.readContents(Batteries.class);
     }
 
     @GetMapping("/gravities")
     public Gravities retrieveGravities() {
         ObjectMapper mapper = new ObjectMapper();
-        return gravityFileConnector.readGravities();
+        return gravityFileConnector.readContents(Gravities.class);
     }
 
     @GetMapping("/ispindel-meta")

@@ -85,14 +85,14 @@ public class IspindelControllerTests{
         Batteries batteries = new Batteries();
         batteries.appendBattery(3.5);
         batteries.appendBattery(3.6);
-        Mockito.when(batteryFileConnector.writeBatteries(ArgumentMatchers.any())).thenReturn(true);
-        Mockito.when(batteryFileConnector.readBatteries()).thenReturn(batteries);
+        Mockito.when(batteryFileConnector.writeContents(ArgumentMatchers.any())).thenReturn(true);
+        Mockito.when(batteryFileConnector.readContents(Batteries.class)).thenReturn(batteries);
 
         Gravities gravities = new Gravities();
         gravities.appendGravity(1.040, 1.40);
         gravities.appendGravity(1.045, 1.040);
-        Mockito.when(gravityFileConnector.writeGravities(ArgumentMatchers.any())).thenReturn(true);
-        Mockito.when(gravityFileConnector.readGravities()).thenReturn(gravities);
+        Mockito.when(gravityFileConnector.writeContents(ArgumentMatchers.any())).thenReturn(true);
+        Mockito.when(gravityFileConnector.readContents(Gravities.class)).thenReturn(gravities);
 
         Calibration calibration = new Calibration(0.0,0.0,0.0,0.0,0.0);
         Mockito.when(calibrationFileConnector.readCalibration()).thenReturn(calibration);
