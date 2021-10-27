@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @RestController
@@ -56,7 +57,7 @@ public class FermenterController {
     }
 
     @PostMapping(value = "/ferment-monitor")
-    public ResponseEntity<String> receiveData(@RequestBody FermentMonitorData fmd) {
+    public ResponseEntity<String> receiveData(@RequestBody @NotNull FermentMonitorData fmd) {
         FermentTemperatures ft = fermentTemperaturesFileConnector.readFermentTemperatures();
         Double shedTemp = fmd.getShedTemp();
         Double fridgeTemp = fmd.getFridgeTemp();

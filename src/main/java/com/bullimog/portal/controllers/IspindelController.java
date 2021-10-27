@@ -3,16 +3,20 @@ package com.bullimog.portal.controllers;
 import com.bullimog.portal.connectors.*;
 import com.bullimog.portal.models.*;
 import com.bullimog.portal.util.GravityUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(path="/brewery")
+@Api(value = "brewery1",produces="produces stuff")
 public class IspindelController {
 
     @Autowired //using config.ControllerDependencies
@@ -34,6 +38,11 @@ public class IspindelController {
     }
 
     @RequestMapping(value = "/ispindel", method = RequestMethod.POST)
+    @ApiOperation(value = "POSTs date from iSpindel", notes = "Return 200", response = String.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully received iSpindel data", response = String.class),
+            @ApiResponse(code = 500, message = "Internal server error - failed to write iSpindel data", response = String.class)}
+    )
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
         GravityUtils gu = new GravityUtils(calibrationFileConnector.readCalibration());
         Temperatures t = temperatureFileConnector.readTemperatures();
@@ -63,6 +72,11 @@ public class IspindelController {
     }
 
     @GetMapping("/temperatures")
+    @ApiOperation(value = "GETs list of iSpindel teperatures", notes = "Return 200", response = Temperatures.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved iSpindel data", response = Temperatures.class),
+            @ApiResponse(code = 500, message = "Internal server error - failed to read iSpindel data")}
+    )
     public Temperatures retrieveTemperatures() {
         ObjectMapper mapper = new ObjectMapper();
         return temperatureFileConnector.readTemperatures();
