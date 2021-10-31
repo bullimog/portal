@@ -16,7 +16,7 @@ import java.io.IOException;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
+//Doesn't get executed
 @DisplayName("=====================> An IT Test Class")
 class IspindelControllerIntTests {
     private RestTemplate restTemplate;

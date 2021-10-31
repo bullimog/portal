@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +20,17 @@ import java.time.LocalDateTime;
 @Api(value = "brewery1",produces="produces stuff")
 public class IspindelController {
 
-    @Autowired //using config.ControllerDependencies
-    TemperatureFileConnector temperatureFileConnector;
+    @Autowired @Qualifier("temperature")
+    FileConnector temperatureFileConnector;
 
-    @Autowired //using config.ControllerDependencies
-    BatteryFileConnector batteryFileConnector;
+    @Autowired @Qualifier("battery")
+    FileConnector batteryFileConnector;
 
-    @Autowired //using config.ControllerDependencies
-    GravityFileConnector gravityFileConnector;
+    @Autowired @Qualifier("gravity")
+    FileConnector gravityFileConnector;
 
-    @Autowired //using config.ControllerDependencies
-    CalibrationFileConnector calibrationFileConnector;
+    @Autowired @Qualifier("calibration")
+    FileConnector calibrationFileConnector;
 
     static ISpindelMeta iSpindelMeta = new ISpindelMeta();
 
@@ -44,18 +45,21 @@ public class IspindelController {
             @ApiResponse(code = 500, message = "Internal server error - failed to write iSpindel data", response = String.class)}
     )
     public ResponseEntity<String> tester(@RequestBody ISpindelData isd) {
-        GravityUtils gu = new GravityUtils(calibrationFileConnector.readCalibration());
-        Temperatures t = temperatureFileConnector.readTemperatures();
+        GravityUtils gu = new GravityUtils(calibrationFileConnector.readContents(Calibration.class).
+                orElse(new Calibration(0.0,0.0,0.0,0.0, 0.0)));
+        Temperatures t = temperatureFileConnector.readContents(Temperatures.class).
+                orElse(new Temperatures());
         Double temperature = isd.getTemperature();
         t.appendTemperature(temperature);
-        boolean temperatureWritten = temperatureFileConnector.writeTemperatures(t);
+        boolean temperatureWritten = temperatureFileConnector.writeContents(t);
 
-        Batteries b = batteryFileConnector.readContents(Batteries.class);
-        if(b==null){ b = new Batteries(); }
+        Batteries b = batteryFileConnector.readContents(Batteries.class).
+                orElse(new Batteries());
         b.appendBattery(isd.getBattery());
         boolean batteryWritten = batteryFileConnector.writeContents(b);
 
-        Gravities g = gravityFileConnector.readContents(Gravities.class);
+
+        Gravities g = gravityFileConnector.readContents(Gravities.class).orElse(new Gravities());
         Double tilt = isd.getAngle();
         Double calculatedGravity = gu.calculateGravity(tilt);
         Double adjustedGravity = gu.adjustGravityForTemperatureC(calculatedGravity, temperature);
@@ -79,20 +83,20 @@ public class IspindelController {
     )
     public Temperatures retrieveTemperatures() {
         ObjectMapper mapper = new ObjectMapper();
-        return temperatureFileConnector.readTemperatures();
+        return temperatureFileConnector.readContents(Temperatures.class).
+                orElse(new Temperatures());
     }
 
     @GetMapping("/batteries")
     public Batteries retrieveBatteries() {
         ObjectMapper mapper = new ObjectMapper();
-        //Batteries b = new Batteries();
-        return batteryFileConnector.readContents(Batteries.class);
+        return batteryFileConnector.readContents(Batteries.class).orElse(new Batteries());
     }
 
     @GetMapping("/gravities")
     public Gravities retrieveGravities() {
         ObjectMapper mapper = new ObjectMapper();
-        return gravityFileConnector.readContents(Gravities.class);
+        return gravityFileConnector.readContents(Gravities.class).orElse(new Gravities());
     }
 
     @GetMapping("/ispindel-meta")

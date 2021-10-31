@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.mockito.Mockito;
 
+import java.util.Optional;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,29 +33,29 @@ public class IspindelControllerTests{
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    TemperatureFileConnector temperatureFileConnector;
+    @MockBean @Qualifier("temperature")
+    FileConnector temperatureFileConnector;
 
-    @MockBean
-    BatteryFileConnector batteryFileConnector;
+    @MockBean @Qualifier("battery")
+    FileConnector batteryFileConnector;
 
-    @MockBean
-    GravityFileConnector gravityFileConnector;
+    @MockBean @Qualifier("gravity")
+    FileConnector gravityFileConnector;
 
-    @MockBean
-    CalibrationFileConnector calibrationFileConnector;
+    @MockBean @Qualifier("calibration")
+    FileConnector calibrationFileConnector;
 
-    @MockBean
-    FermentTemperaturesFileConnector fermentTemperaturesFileConnector;
+    @MockBean @Qualifier("ferment-temperature")
+    FileConnector fermentTemperaturesFileConnector;
 
-    @MockBean
-    FermentHeatCoolFileConnector fermentHeatCoolFileConnector;
+    @MockBean @Qualifier("ferment-heatcool")
+    FileConnector fermentHeatCoolFileConnector;
 
-    @MockBean
-    FermentBubblesFileConnector fermentBubblesFileConnector;
+    @MockBean @Qualifier("ferment-bubbles")
+    FileConnector fermentBubblesFileConnector;
 
-    @MockBean
-    FermentConfigFileConnector fermentConfigFileConnector;
+    @MockBean @Qualifier("ferment-config")
+    FileConnector fermentConfigFileConnector;
 
     private static ObjectMapper mapper = new ObjectMapper();
 
@@ -61,7 +64,7 @@ public class IspindelControllerTests{
         Temperatures temperatures = new Temperatures();
         temperatures.appendTemperature(10.01);
         temperatures.appendTemperature(10.02);
-        Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
+        Mockito.when(temperatureFileConnector.readContents(Temperatures.class)).thenReturn(Optional.of(temperatures));
         mockMvc.perform(get("/brewery/temperatures"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dateTime", Matchers.hasSize(2)))
@@ -79,23 +82,23 @@ public class IspindelControllerTests{
         Temperatures temperatures = new Temperatures();
         temperatures.appendTemperature(10.01);
         temperatures.appendTemperature(10.02);
-        Mockito.when(temperatureFileConnector.writeTemperatures(ArgumentMatchers.any())).thenReturn(true);
-        Mockito.when(temperatureFileConnector.readTemperatures()).thenReturn(temperatures);
+        Mockito.when(temperatureFileConnector.writeContents(ArgumentMatchers.any())).thenReturn(true);
+        Mockito.when(temperatureFileConnector.readContents(Temperatures.class)).thenReturn(Optional.of(temperatures));
 
         Batteries batteries = new Batteries();
         batteries.appendBattery(3.5);
         batteries.appendBattery(3.6);
         Mockito.when(batteryFileConnector.writeContents(ArgumentMatchers.any())).thenReturn(true);
-        Mockito.when(batteryFileConnector.readContents(Batteries.class)).thenReturn(batteries);
+        Mockito.when(batteryFileConnector.readContents(Batteries.class)).thenReturn(Optional.of(batteries));
 
         Gravities gravities = new Gravities();
         gravities.appendGravity(1.040, 1.40);
         gravities.appendGravity(1.045, 1.040);
         Mockito.when(gravityFileConnector.writeContents(ArgumentMatchers.any())).thenReturn(true);
-        Mockito.when(gravityFileConnector.readContents(Gravities.class)).thenReturn(gravities);
+        Mockito.when(gravityFileConnector.readContents(Gravities.class)).thenReturn(Optional.of(gravities));
 
         Calibration calibration = new Calibration(0.0,0.0,0.0,0.0,0.0);
-        Mockito.when(calibrationFileConnector.readCalibration()).thenReturn(calibration);
+        Mockito.when(calibrationFileConnector.readContents(Calibration.class)).thenReturn(Optional.of(calibration));
 
         mockMvc.perform(post("/brewery/ispindel")
                 .contentType(MediaType.APPLICATION_JSON)

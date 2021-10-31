@@ -1,9 +1,9 @@
 package com.bullimog.portal.controllers;
 
-import com.bullimog.portal.connectors.FermentConfigFileConnector;
-import com.bullimog.portal.models.Calibration;
+import com.bullimog.portal.connectors.FileConnector;
 import com.bullimog.portal.models.FermentConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +17,8 @@ import java.util.HashMap;
 
 @Controller
 public class FermenterConfigController implements WebMvcConfigurer {
-    @Autowired
-    FermentConfigFileConnector fermentConfigFileConnector;
+    @Autowired @Qualifier("ferment-config")
+    FileConnector fermentConfigFileConnector;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -28,7 +28,8 @@ public class FermenterConfigController implements WebMvcConfigurer {
     @GetMapping(value = "/fermenter-config")
     public ModelAndView configGet() {
         HashMap<String, Object> params = new HashMap<>();
-        FermentConfig fermentConfig = fermentConfigFileConnector.readConfig();
+        FermentConfig fermentConfig = fermentConfigFileConnector.readContents(FermentConfig.class).
+                orElse(new FermentConfig("none", 0.0, 100.00, 60000, 0.0, 0.0, 0.0 ));
         params.put("fermentConfig", fermentConfig);
         return new ModelAndView("fermenter-config-form", params);
     }
@@ -40,7 +41,7 @@ public class FermenterConfigController implements WebMvcConfigurer {
             return "fermenter-config-form";
         }
 
-        fermentConfigFileConnector.writeFermentConfig(fermentConfig);
+        fermentConfigFileConnector.writeContents(fermentConfig);
         return "redirect:/result";
     }
 }

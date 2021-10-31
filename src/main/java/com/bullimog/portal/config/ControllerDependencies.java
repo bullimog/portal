@@ -1,6 +1,7 @@
 package com.bullimog.portal.config;
 
 import com.bullimog.portal.connectors.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,40 +10,43 @@ import org.springframework.context.annotation.Configuration;
 //Configuration values defined in resources/application.properties
 @Configuration
 public class ControllerDependencies {
-
-    @Bean
-    public BatteryFileConnector getBatteryFileConnector(@Value("${battery.filename}") String filename) {
-        return new BatteryFileConnectorImpl(filename);
-    }
-    @Bean
-    public TemperatureFileConnector getTemperatureFileConnector(@Value("${temperature.filename}") String filename) {
-        return new TemperatureFileConnectorImpl(filename);
-    }
-    @Bean
-    public GravityFileConnector getGravityFileConnector(@Value("${gravity.filename}") String filename) {
-        return new GravityFileConnectorImpl(filename);
-    }
-    @Bean
-    public CalibrationFileConnector getCalibrationFileConnector(@Value("${calibration.filename}") String filename) {
-        return new CalibrationFileConnectorImpl(filename);
-    }
-    @Bean
-    public FermentTemperaturesFileConnector getFermentTemperaturesFileConnector(@Value("${fermenttemperatures.filename}") String filename) {
-        return new FermentTemperaturesFileConnectorImpl(filename);
+    @Bean @Qualifier("battery")
+    public FileConnector getBatteryFileConnector(@Value("${battery.filename}") String filename) {
+        return new FileConnectorImpl(filename);
     }
 
-    @Bean
-    public FermentHeatCoolFileConnector getFermentHeatCoolFileConnector(@Value("${fermentheatcool.filename}") String filename) {
-        return new FermentHeatCoolFileConnectorImpl(filename);
+    @Bean @Qualifier("temperature")
+    public FileConnector getTemperatureFileConnector(@Value("${temperature.filename}") String filename) {
+        return new FileConnectorImpl(filename);
     }
 
-    @Bean
-    public FermentBubblesFileConnector getFermentBubblesFileConnector(@Value("${fermentbubbles.filename}") String filename) {
-        return new FermentBubblesFileConnectorImpl(filename);
+    @Bean @Qualifier("gravity")
+    public FileConnector getGravityFileConnector(@Value("${gravity.filename}") String filename) {
+        return new FileConnectorImpl(filename);
     }
 
-    @Bean
-    public FermentConfigFileConnector getFermentConfigFileConnector(@Value("${fermentconfig.filename}") String filename) {
-        return new FermentConfigFileConnectorImpl(filename);
+    @Bean @Qualifier("calibration")
+    public FileConnector getCalibrationFileConnector(@Value("${calibration.filename}") String filename) {
+        return new FileConnectorImpl(filename);
+    }
+
+    @Bean @Qualifier("ferment-temperature")
+    public FileConnector getFermentTemperaturesFileConnector(@Value("${fermenttemperatures.filename}") String filename) {
+        return new FileConnectorImpl(filename);
+    }
+
+    @Bean @Qualifier("ferment-heatcool")
+    public FileConnector getFermentHeatCoolFileConnector(@Value("${fermentheatcool.filename}") String filename) {
+        return new FileConnectorImpl(filename);
+    }
+
+    @Bean @Qualifier("ferment-bubbles")
+    public FileConnector getFermentBubblesFileConnector(@Value("${fermentbubbles.filename}") String filename) {
+        return new FileConnectorImpl(filename);
+    }
+
+    @Bean @Qualifier("ferment-config")
+    public FileConnector getFermentConfigFileConnector(@Value("${fermentconfig.filename}") String filename) {
+        return new FileConnectorImpl(filename);
     }
 }
